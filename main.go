@@ -44,7 +44,7 @@ func main() {
 	indexesType := []string{"id"}
 	typeCollection := db.PrepareDB(session, database, "sessions", indexesType)
 
-	idpServer, err := jormungandrSamlIdp.New("saml-keys/myservice.cert", "saml-keys/myservice.key")
+	idpServer, err := jormungandrSamlIdp.New("saml-keys/service.cert", "saml-keys/service.key")
 	if err != nil {
 		service.LogError("Creation of SAML IDP server failed", "err", err)
 		return
