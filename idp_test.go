@@ -139,10 +139,47 @@ func createSAMLIdP() *samlidp.Server {
 	return s
 }
 
+var googleMetadata = []byte(`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://accounts.google.com/o/saml2?idpid=C00itr2x5" validUntil="2021-02-20T10:46:54.000Z">
+  <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>MIIDdDCCAlygAwIBAgIGAVMIls/iMA0GCSqGSIb3DQEBCwUAMHsxFDASBgNVBAoTC0dvb2dsZSBJ
+bmMuMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MQ8wDQYDVQQDEwZHb29nbGUxGDAWBgNVBAsTD0dv
+b2dsZSBGb3IgV29yazELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWEwHhcNMTYwMjIy
+MTA0NjU0WhcNMjEwMjIwMTA0NjU0WjB7MRQwEgYDVQQKEwtHb29nbGUgSW5jLjEWMBQGA1UEBxMN
+TW91bnRhaW4gVmlldzEPMA0GA1UEAxMGR29vZ2xlMRgwFgYDVQQLEw9Hb29nbGUgRm9yIFdvcmsx
+CzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+MIIBCgKCAQEAux3UNf0Shzoi8YHBBV9Wi5UdBikelKCx4VuMCmRQaqSjogujKLa1RcJaDFQIysNb
+pKFlV8GTRexPE7gWhbk56VOSF7HzUS7Z9bhCWbTMD7eI8X+YJMFsAysSY33dIL11Rv32RrM3qOdY
+a7EkewGFZRRxt9xZckncAPTYRD42yEfotMet1DLeSVRaHjsw8hLXLGx2hcT5sgE4FpMYKsP9BEFh
+Ti7uWVTb5Ew446sBYX6uevwxad8JSU54pAUHD5pJ9cql2YWIKyJmjBM2iAnx5bwI534sIsJrOQNp
+iWDOdGC3dGpbQmg5Gj8/TEGl0S3L/StZdEwBVKp3s5XC8ZonewIDAQABMA0GCSqGSIb3DQEBCwUA
+A4IBAQCzggUSuIlbNVg8tY/saEzYMmjwwBJYXEoMJYcb13nZulg6vUgBEP1ddMAgKXlhY/g97JPZ
+innjPGzFKwnvBt5ZZxPxkL8pFlz2AW0YKIDq+W/dHSpkr3JLqPuMnZOAJfoXx1WoPSYbFCxw/cIA
+fjdtnrwzJx0GOjUexi18zL06XoiJKVv2LZUw56nC95Yvy0/X6S6r+iaPIZWtbCVn7MaOMNfsq9BX
+qTkHwoGEh5pO0brdnIRH4zmpA5wv3Dt5gkw15nQlxiy+91wiWlYRCfF05ZkoVKEAlWCr1Dm9p/Jk
+9BncdveCFQaR1ukzCHfY3rSEZmODq0a5knpr/JywONoL</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://accounts.google.com/o/saml2/idp?idpid=C00itr2x5"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://accounts.google.com/o/saml2/idp?idpid=C00itr2x5"/>
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>`)
+
 // Call generated test helper, this checks that the returned media type is of the
 // correct type (i.e. uses view "default") and validates the media type.
 // Also, it ckecks the returned status code
 func TestGetGoogleMetadataIdpOK(t *testing.T) {
+	err := ioutil.WriteFile("google-metadata.xml", googleMetadata, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove("google-metadata.xml")
+
 	test.GetGoogleMetadataIdpOK(t, context.Background(), goaService, ctrl)
 }
 
