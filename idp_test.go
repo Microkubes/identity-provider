@@ -19,5 +19,3 @@ var (
 func TestGetGoogleMetadataIdpOK(t *testing.T) {
 	test.GetGoogleMetadataIdpOK(t, context.Background(), service, ctrl)
 }
-
-func Test

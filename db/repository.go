@@ -1,19 +1,39 @@
 package db
 
 import (
-	"gopkg.in/mgo.v2"
+	"net/http"
 	"time"
-	// "github.com/goadesign/goa"
+
+	"gopkg.in/mgo.v2"
+
+	"github.com/crewjam/saml"
+	"github.com/crewjam/saml/samlidp"
 )
 
-// IDPRepository defaines the interface for accessing the idp data
-type IDPRepository interface{}
+type Repository interface {
+	// AddSession adds new session in DB
+	AddSession(session *saml.Session) error
+	// GetSession looks up a Sessions by the session ID.
+	GetSession(w http.ResponseWriter, r *http.Request, req *saml.IdpAuthnRequest) (*saml.Session, error)
+	// DeleteSession deletes session by sessionID which is cookie value
+	DeleteSession(sessionID string) error
+	// GetSessions returns all sessions
+	GetSessions() (*[]saml.Session, error)
+
+	// AddServiceProvider register new service provider
+	AddServiceProvider(service *samlidp.Service) error
+	// GetServiceProvider returns the Service Provider metadata for the service provider IDs
+	GetServiceProvider(r *http.Request, serviceProviderID string) (*saml.EntityDescriptor, error)
+	// DeleteServiceProvider deletes the service by serviceID which is EntityID
+	DeleteServiceProvider(serviceID string) error
+	// GetServiceProviders returns all SP
+	GetServiceProviders() (*[]samlidp.Service, error)
+}
 
 // MongoCollection wraps a mgo.Collection to embed methods in models.
 type MongoCollections struct {
 	Services *mgo.Collection
 	Sessions *mgo.Collection
-	Users    *mgo.Collection
 }
 
 // NewSession returns a new Mongo Session.

@@ -13,6 +13,7 @@ package app
 import (
 	"context"
 	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/cors"
 	"net/http"
 )
 
@@ -34,13 +35,78 @@ func initService(service *goa.Service) {
 // IdpController is the controller interface for the Idp actions.
 type IdpController interface {
 	goa.Muxer
+	AddServiceProvider(*AddServiceProviderIdpContext) error
+	DeleteServiceProvider(*DeleteServiceProviderIdpContext) error
+	DeleteSession(*DeleteSessionIdpContext) error
 	GetGoogleMetadata(*GetGoogleMetadataIdpContext) error
+	GetMetadata(*GetMetadataIdpContext) error
+	GetServiceProviders(*GetServiceProvidersIdpContext) error
+	GetSessions(*GetSessionsIdpContext) error
+	ServeLogin(*ServeLoginIdpContext) error
+	ServeSSO(*ServeSSOIdpContext) error
 }
 
 // MountIdpController "mounts" a Idp resource controller on the given service.
 func MountIdpController(service *goa.Service, ctrl IdpController) {
 	initService(service)
 	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewAddServiceProviderIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.AddServiceProvider(rctx)
+	}
+	service.Mux.Handle("POST", "/saml/idp/services", ctrl.MuxHandler("addServiceProvider", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "AddServiceProvider", "route", "POST /saml/idp/services")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteServiceProviderIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*DeleteSPPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.DeleteServiceProvider(rctx)
+	}
+	service.Mux.Handle("DELETE", "/saml/idp/services", ctrl.MuxHandler("deleteServiceProvider", h, unmarshalDeleteServiceProviderIdpPayload))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteServiceProvider", "route", "DELETE /saml/idp/services")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteSessionIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*DeleteSessionPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.DeleteSession(rctx)
+	}
+	service.Mux.Handle("DELETE", "/saml/idp/sessions", ctrl.MuxHandler("deleteSession", h, unmarshalDeleteSessionIdpPayload))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteSession", "route", "DELETE /saml/idp/sessions")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -56,6 +122,169 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 	}
 	service.Mux.Handle("GET", "/saml/idp/metadata/google", ctrl.MuxHandler("getGoogleMetadata", h, nil))
 	service.LogInfo("mount", "ctrl", "Idp", "action", "GetGoogleMetadata", "route", "GET /saml/idp/metadata/google")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewGetMetadataIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.GetMetadata(rctx)
+	}
+	service.Mux.Handle("GET", "/saml/idp/metadata", ctrl.MuxHandler("getMetadata", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetMetadata", "route", "GET /saml/idp/metadata")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewGetServiceProvidersIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.GetServiceProviders(rctx)
+	}
+	service.Mux.Handle("GET", "/saml/idp/services", ctrl.MuxHandler("getServiceProviders", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetServiceProviders", "route", "GET /saml/idp/services")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewGetSessionsIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.GetSessions(rctx)
+	}
+	service.Mux.Handle("GET", "/saml/idp/sessions", ctrl.MuxHandler("getSessions", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetSessions", "route", "GET /saml/idp/sessions")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewServeLoginIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.ServeLogin(rctx)
+	}
+	service.Mux.Handle("POST", "/saml/idp/sso", ctrl.MuxHandler("serveLogin", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLogin", "route", "POST /saml/idp/sso")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewServeSSOIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.ServeSSO(rctx)
+	}
+	service.Mux.Handle("GET", "/saml/idp/sso", ctrl.MuxHandler("serveSSO", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeSSO", "route", "GET /saml/idp/sso")
+}
+
+// unmarshalDeleteServiceProviderIdpPayload unmarshals the request body into the context request data Payload field.
+func unmarshalDeleteServiceProviderIdpPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &deleteSPPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// unmarshalDeleteSessionIdpPayload unmarshals the request body into the context request data Payload field.
+func unmarshalDeleteSessionIdpPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &deleteSessionPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// PublicController is the controller interface for the Public actions.
+type PublicController interface {
+	goa.Muxer
+	goa.FileServer
+}
+
+// MountPublicController "mounts" a Public resource controller on the given service.
+func MountPublicController(service *goa.Service, ctrl PublicController) {
+	initService(service)
+	var h goa.Handler
+	service.Mux.Handle("OPTIONS", "/css/*filepath", ctrl.MuxHandler("preflight", handlePublicOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/js/*filepath", ctrl.MuxHandler("preflight", handlePublicOrigin(cors.HandlePreflight()), nil))
+
+	h = ctrl.FileHandler("/css/*filepath", "public/css")
+	h = handlePublicOrigin(h)
+	service.Mux.Handle("GET", "/css/*filepath", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "Public", "files", "public/css", "route", "GET /css/*filepath")
+
+	h = ctrl.FileHandler("/js/*filepath", "public/js")
+	h = handlePublicOrigin(h)
+	service.Mux.Handle("GET", "/js/*filepath", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "Public", "files", "public/js", "route", "GET /js/*filepath")
+
+	h = ctrl.FileHandler("/css/", "public/css/index.html")
+	h = handlePublicOrigin(h)
+	service.Mux.Handle("GET", "/css/", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "Public", "files", "public/css/index.html", "route", "GET /css/")
+
+	h = ctrl.FileHandler("/js/", "public/js/index.html")
+	h = handlePublicOrigin(h)
+	service.Mux.Handle("GET", "/js/", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "Public", "files", "public/js/index.html", "route", "GET /js/")
+}
+
+// handlePublicOrigin applies the CORS response headers corresponding to the origin.
+func handlePublicOrigin(h goa.Handler) goa.Handler {
+
+	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		origin := req.Header.Get("Origin")
+		if origin == "" {
+			// Not a CORS request
+			return h(ctx, rw, req)
+		}
+		if cors.MatchOrigin(origin, "*") {
+			ctx = goa.WithLogContext(ctx, "origin", origin)
+			rw.Header().Set("Access-Control-Allow-Origin", origin)
+			rw.Header().Set("Access-Control-Allow-Credentials", "false")
+			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
+				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+			}
+			return h(ctx, rw, req)
+		}
+
+		return h(ctx, rw, req)
+	}
 }
 
 // SwaggerController is the controller interface for the Swagger actions.

@@ -24,6 +24,83 @@ var _ = Resource("idp", func() {
 		Routing(GET("/metadata/google"))
 		Response(OK)
 	})
+	Action("getMetadata", func() {
+		Description("Get Jormungandr metadata")
+		Routing(GET("/metadata"))
+		Response(OK)
+	})
+
+	Action("serveSSO", func() {
+		Description("Serve Single Sign On")
+		Routing(GET("/sso"))
+	})
+	Action("serveLogin", func() {
+		Description("Creare user session")
+		Routing(POST("/sso"))
+	})
+
+	Action("addServiceProvider", func() {
+		Description("Add new service provider")
+		Routing(POST("/services"))
+		Response(Created)
+		Response(BadRequest, ErrorMedia)
+		Response(InternalServerError, ErrorMedia)
+	})
+	Action("deleteServiceProvider", func() {
+		Description("Delete a service provider")
+		Routing(DELETE("/services"))
+		Payload(DeleteSPPayload)
+		Response(OK)
+		Response(NotFound, ErrorMedia)
+		Response(InternalServerError, ErrorMedia)
+	})
+	Action("getServiceProviders", func() {
+		Description("Get all service providres")
+		Routing(GET("/services"))
+		Response(OK)
+		Response(NotFound, ErrorMedia)
+		Response(InternalServerError, ErrorMedia)
+	})
+
+	Action("deleteSession", func() {
+		Description("Delete a service provider")
+		Routing(DELETE("/sessions"))
+		Payload(DeleteSessionPayload)
+		Response(OK)
+		Response(NotFound, ErrorMedia)
+		Response(InternalServerError, ErrorMedia)
+	})
+	Action("getSessions", func() {
+		Description("Get all sessions")
+		Routing(GET("/sessions"))
+		Response(OK)
+		Response(NotFound, ErrorMedia)
+		Response(InternalServerError, ErrorMedia)
+	})
+
+})
+
+// DeleteSPPayload defines the payload for the delete SP action.
+var DeleteSPPayload = Type("DeleteSPPayload", func() {
+	Description("DeleteSPPayload")
+
+	Attribute("serviceId", String, "ID of service provider")
+	Required("serviceId")
+})
+
+var DeleteSessionPayload = Type("DeleteSessionPayload", func() {
+	Description("DeleteSessionPayload")
+
+	Attribute("sessionId", String, "ID of the session")
+	Required("sessionId")
+})
+
+var _ = Resource("public", func() {
+	Origin("*", func() {
+		Methods("GET", "POST")
+	})
+	Files("/css/*filepath", "public/css")
+	Files("/js/*filepath", "public/js")
 })
 
 // Swagger UI

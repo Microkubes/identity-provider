@@ -1,8 +1,13 @@
 {
-  "name": "identity-provider-microservice",
-  "port": 8080,
-  "virtual_host": "identity-provider.services.jormugandr.org",
-  "hosts": ["localhost", "identity-provider.services.jormugandr.org"],
-  "weight": 10,
-  "slots": 100
+	"microservice":	{
+		"name": "identity-provider-microservice",
+		"port": 8080,
+		"virtual_host": "identity-provider.services.jormugandr.org",
+		"hosts": ["localhost", "identity-provider.services.jormugandr.org"],
+		"weight": 10,
+		"slots": 100
+	},
+ 	"services": {
+		"microservice-user": "http://127.0.0.1:8081/users"
+	}
 }

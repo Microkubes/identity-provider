@@ -16,6 +16,123 @@ import (
 	"net/http"
 )
 
+// AddServiceProviderIdpContext provides the idp addServiceProvider action context.
+type AddServiceProviderIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewAddServiceProviderIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller addServiceProvider action.
+func NewAddServiceProviderIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*AddServiceProviderIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := AddServiceProviderIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// Created sends a HTTP response with status code 201.
+func (ctx *AddServiceProviderIdpContext) Created() error {
+	ctx.ResponseData.WriteHeader(201)
+	return nil
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *AddServiceProviderIdpContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *AddServiceProviderIdpContext) InternalServerError(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// DeleteServiceProviderIdpContext provides the idp deleteServiceProvider action context.
+type DeleteServiceProviderIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *DeleteSPPayload
+}
+
+// NewDeleteServiceProviderIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller deleteServiceProvider action.
+func NewDeleteServiceProviderIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteServiceProviderIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := DeleteServiceProviderIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *DeleteServiceProviderIdpContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *DeleteServiceProviderIdpContext) NotFound(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 404, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *DeleteServiceProviderIdpContext) InternalServerError(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// DeleteSessionIdpContext provides the idp deleteSession action context.
+type DeleteSessionIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *DeleteSessionPayload
+}
+
+// NewDeleteSessionIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller deleteSession action.
+func NewDeleteSessionIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteSessionIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := DeleteSessionIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *DeleteSessionIdpContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *DeleteSessionIdpContext) NotFound(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 404, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *DeleteSessionIdpContext) InternalServerError(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
 // GetGoogleMetadataIdpContext provides the idp getGoogleMetadata action context.
 type GetGoogleMetadataIdpContext struct {
 	context.Context
@@ -41,4 +158,147 @@ func (ctx *GetGoogleMetadataIdpContext) OK(resp []byte) error {
 	ctx.ResponseData.WriteHeader(200)
 	_, err := ctx.ResponseData.Write(resp)
 	return err
+}
+
+// GetMetadataIdpContext provides the idp getMetadata action context.
+type GetMetadataIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewGetMetadataIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller getMetadata action.
+func NewGetMetadataIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetMetadataIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := GetMetadataIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *GetMetadataIdpContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// GetServiceProvidersIdpContext provides the idp getServiceProviders action context.
+type GetServiceProvidersIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewGetServiceProvidersIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller getServiceProviders action.
+func NewGetServiceProvidersIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetServiceProvidersIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := GetServiceProvidersIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *GetServiceProvidersIdpContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *GetServiceProvidersIdpContext) NotFound(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 404, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *GetServiceProvidersIdpContext) InternalServerError(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// GetSessionsIdpContext provides the idp getSessions action context.
+type GetSessionsIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewGetSessionsIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller getSessions action.
+func NewGetSessionsIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetSessionsIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := GetSessionsIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *GetSessionsIdpContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *GetSessionsIdpContext) NotFound(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 404, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *GetSessionsIdpContext) InternalServerError(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// ServeLoginIdpContext provides the idp serveLogin action context.
+type ServeLoginIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewServeLoginIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller serveLogin action.
+func NewServeLoginIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*ServeLoginIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := ServeLoginIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// ServeSSOIdpContext provides the idp serveSSO action context.
+type ServeSSOIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewServeSSOIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller serveSSO action.
+func NewServeSSOIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*ServeSSOIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := ServeSSOIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
 }

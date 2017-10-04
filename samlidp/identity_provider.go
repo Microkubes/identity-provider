@@ -29,9 +29,8 @@ func MakeAssertion(req *saml.IdpAuthnRequest, idp *saml.IdentityProvider, sessio
 	if assertionMaker == nil {
 		assertionMaker = saml.DefaultAssertionMaker{}
 	}
-	if err := assertionMaker.MakeAssertion(req, session); err != nil {
-		return goa.ErrInternal(err)
-	}
+
+	assertionMaker.MakeAssertion(req, session)
 
 	return nil
 }

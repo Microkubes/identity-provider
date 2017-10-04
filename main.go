@@ -8,6 +8,7 @@ import (
 
 	"github.com/JormungandrK/identity-provider/app"
 	"github.com/JormungandrK/identity-provider/db"
+	jormungandrSamlIdp "github.com/JormungandrK/identity-provider/samlidp"
 	"github.com/JormungandrK/microservice-tools/gateway"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
@@ -19,7 +20,7 @@ func main() {
 	defer unregisterService() // defer the unregister for after main exits
 
 	// Create service
-	service := goa.New("identity provider")
+	service := goa.New("identity-provider")
 
 	// Mount middleware
 	service.Use(middleware.RequestID())
@@ -43,21 +44,24 @@ func main() {
 	indexesType := []string{"id"}
 	typeCollection := db.PrepareDB(session, database, "sessions", indexesType)
 
-	// Create type collection and indexes
-	indexesDataSource := []string{"name"}
-	dataSourceCollection := db.PrepareDB(session, database, "users", indexesDataSource)
+	idpServer, err := jormungandrSamlIdp.New("saml-keys/myservice.cert", "saml-keys/myservice.key")
+	if err != nil {
+		service.LogError("Creation of SAML IDP server failed", "err", err)
+		return
+	}
 
 	// Mount "idp" controller
-	c := NewIdpController(service, &db.MongoCollections{
+	c1 := NewIdpController(service, &db.MongoCollections{
 		Services: metadataCollection,
 		Sessions: typeCollection,
-		Users:    dataSourceCollection,
-	})
-
-	app.MountIdpController(service, c)
+	}, &idpServer.IDP)
+	app.MountIdpController(service, c1)
 	// Mount "swagger" controller
 	c2 := NewSwaggerController(service)
 	app.MountSwaggerController(service, c2)
+	// Mount "public" controller
+	c3 := NewPublicController(service)
+	app.MountPublicController(service, c3)
 
 	// Start service
 	if err := service.ListenAndServe(":8080"); err != nil {
