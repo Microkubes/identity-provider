@@ -76,6 +76,25 @@ cd $GOPATH
 go get gopkg.in/mgo.v2
 ```
 
+## Setting up the secret keys
+
+SAML IdP should use the same saml keys as service providers. 
+
+In order to create them create a directory in which you'll keep your key-pair:
+
+```bash
+mkdir saml-keys
+cd saml-keys
+```
+
+IdP must have an self-signed X.509 key pair established. You can generate your own with something like this:
+
+```bash
+openssl req -x509 -newkey rsa:2048 -keyout service.key -out service.cert -days 365 -nodes -subj "/CN=myservice.example.com"
+```
+
+**NOTE:** Make sure you have service.key and service.cert files in the saml-keys directory
+
 # Docker Builds
 
 First, create a directory for the shh keys:
