@@ -63,12 +63,18 @@ func PrepareDB(session *mgo.Session, db string, dbCollection string, indexes []s
 	// Define indexes
 	for _, elem := range indexes {
 		i := []string{elem}
-		index := mgo.Index{
-			Key:        i,
-			Unique:     true,
-			DropDups:   true,
-			Background: true,
-			Sparse:     true,
+		index := mgo.Index{}
+		if dbCollection == "sessions" {
+			index.Key = i
+			index.Unique = true
+			index.Background = true
+			index.Sparse = true
+			index.ExpireAfter = time.Duration(86400) * time.Second
+		} else {
+			index.Key = i
+			index.Unique = true
+			index.Background = true
+			index.Sparse = true
 		}
 
 		// Create indexes
