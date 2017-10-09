@@ -12,10 +12,10 @@ import (
 // LoginForm produces a form which requests a username and password and directs the user
 // back to the IDP authorize URL to restart the SAML login flow, this time establishing a
 // session based on the credentials that were provided.
-func LoginForm(w http.ResponseWriter, r *http.Request, req *saml.IdpAuthnRequest, message string, file string) {
+func LoginForm(w http.ResponseWriter, r *http.Request, req *saml.IdpAuthnRequest, url string, message string, file string) {
 	data := map[string]interface{}{
 		"Error":       message,
-		"URL":         req.IDP.SSOURL.String(),
+		"URL":         url,
 		"SAMLRequest": base64.StdEncoding.EncodeToString(req.RequestBuffer),
 		"RelayState":  req.RelayState,
 	}

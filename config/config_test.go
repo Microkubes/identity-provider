@@ -17,8 +17,11 @@ func TestLoadConfig(t *testing.T) {
 			"slots": 100
 	    },
 	    "services": {
-	      "microservice-user": "http://127.0.0.1:8081/users"
-	    }
+	      	"microservice-user": "http://127.0.0.1:8081/users"
+	    },
+	   	"client": {
+			"redirect-from-login": "http://localhost:8082/profiles/me"
+		}
 	  }`
 
 	cnfFile, err := ioutil.TempFile("", "tmp-config")

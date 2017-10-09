@@ -115,6 +115,23 @@ paths:
       schemes:
       - http
       summary: Download public/js
+  /saml/idp/login:
+    get:
+      description: Login user
+      operationId: idp#loginUser
+      schemes:
+      - http
+      summary: loginUser idp
+      tags:
+      - idp
+    post:
+      description: Login user
+      operationId: idp#serveLoginUser
+      schemes:
+      - http
+      summary: serveLoginUser idp
+      tags:
+      - idp
   /saml/idp/metadata:
     get:
       description: Get Jormungandr metadata

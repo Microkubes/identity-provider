@@ -1,22 +1,26 @@
 package main
 
 import (
-	"encoding/base64"
+	"crypto/rsa"
+	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/JormungandrK/identity-provider/app"
+	"github.com/JormungandrK/identity-provider/config"
 	"github.com/JormungandrK/identity-provider/db"
 	jormungandrSamlIdp "github.com/JormungandrK/identity-provider/samlidp"
 	"github.com/JormungandrK/identity-provider/service"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/goadesign/goa"
 )
 
@@ -24,7 +28,7 @@ var sessionMaxAge = time.Hour * 24
 
 var badRequestFile = "public/bad-request.html"
 var errorFile = "public/error.html"
-var logintFile = "public/login/login-form.html"
+var loginFile = "public/login/login-form.html"
 
 // IdpController implements the idp resource.
 type IdpController struct {
@@ -65,6 +69,117 @@ func (c *IdpController) GetMetadata(ctx *app.GetMetadataIdpContext) error {
 	return ctx.OK(buf)
 }
 
+// LoginUser shows login form
+func (c *IdpController) LoginUser(ctx *app.LoginUserIdpContext) error {
+	r := ctx.Request
+	w := ctx.ResponseData
+	c.IDP.ServiceProviderProvider = c.Repository
+
+	gatewayURL := os.Getenv("API_GATEWAY_URL")
+	if gatewayURL == "" {
+		gatewayURL = "http://localhost:8080"
+	}
+
+	req := &saml.IdpAuthnRequest{
+		IDP:         c.IDP,
+		HTTPRequest: r,
+		RelayState:  "relayState",
+	}
+
+	jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "", loginFile)
+
+	return nil
+}
+
+// ServeLoginUser runs login user action
+func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error {
+	r := ctx.Request
+	w := ctx.ResponseData
+	c.IDP.ServiceProviderProvider = c.Repository
+
+	gatewayURL := os.Getenv("API_GATEWAY_URL")
+	if gatewayURL == "" {
+		gatewayURL = "http://localhost:8080"
+	}
+
+	config, err := config.LoadConfig("")
+	if err != nil {
+		panic(err)
+	}
+
+	req := &saml.IdpAuthnRequest{
+		IDP:         c.IDP,
+		HTTPRequest: r,
+		RelayState:  "relayState",
+	}
+
+	username := strings.TrimSpace(r.FormValue("user"))
+	password := strings.TrimSpace(r.FormValue("password"))
+
+	if username == "" || password == "" {
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "Credentials required!", loginFile)
+		return nil
+	}
+
+	if err := jormungandrSamlIdp.ValidateCredentials(username, password); err != nil {
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), err.Error(), loginFile)
+		return nil
+	}
+
+	user, err := service.FindUser(username, password)
+	if err != nil {
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "Wrong username or password!", loginFile)
+		return nil
+	}
+
+	roles := []string{}
+	for _, v := range user["roles"].([]interface{}) {
+		roles = append(roles, v.(string))
+	}
+
+	encodedPrivatekKey := x509.MarshalPKCS1PrivateKey(c.IDP.Key.(*rsa.PrivateKey))
+	claims := jwt.MapClaims{
+		"username": user["username"].(string),
+		"userId":   user["id"].(string),
+		"roles":    roles,
+		"email":    user["email"].(string),
+	}
+	tokenHS := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenStr, err := tokenHS.SignedString(encodedPrivatekKey)
+	if err != nil {
+		jormungandrSamlIdp.ErrorForm(w, r, fmt.Sprintf("A server error has occured. %s", err.Error()), 500, errorFile)
+	}
+
+	session := &saml.Session{
+		ID:            tokenStr,
+		CreateTime:    saml.TimeNow(),
+		ExpireTime:    saml.TimeNow().Add(sessionMaxAge),
+		Index:         hex.EncodeToString(jormungandrSamlIdp.RandomBytes(32)),
+		UserName:      user["id"].(string),
+		Groups:        roles,
+		UserEmail:     user["email"].(string),
+		UserGivenName: user["username"].(string),
+	}
+
+	if err = c.Repository.AddSession(session); err != nil {
+		jormungandrSamlIdp.ErrorForm(w, r, fmt.Sprintf("A server error has occured. %s", err.Error()), 500, errorFile)
+		return nil
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session",
+		Value:    session.ID,
+		MaxAge:   int(sessionMaxAge.Seconds()),
+		HttpOnly: true,
+		Secure:   r.URL.Scheme == "https",
+		Path:     "/",
+	})
+
+	http.Redirect(w, r, config.Client["redirect-from-login"], http.StatusFound)
+
+	return nil
+}
+
 // ServeSSO runs the serveSSO action.
 func (c *IdpController) ServeSSO(ctx *app.ServeSSOIdpContext) error {
 	r := ctx.Request
@@ -79,7 +194,7 @@ func (c *IdpController) ServeSSO(ctx *app.ServeSSOIdpContext) error {
 
 	session, _ := c.Repository.GetSession(w, r, req)
 	if session == nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, "", logintFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), "", loginFile)
 		return nil
 	}
 
@@ -112,18 +227,18 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 	password := strings.TrimSpace(r.FormValue("password"))
 
 	if username == "" || password == "" {
-		jormungandrSamlIdp.LoginForm(w, r, req, "Credentials required!", logintFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), "Credentials required!", loginFile)
 		return nil
 	}
 
 	if err := jormungandrSamlIdp.ValidateCredentials(username, password); err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, err.Error(), logintFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), err.Error(), loginFile)
 		return nil
 	}
 
 	user, err := service.FindUser(username, password)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, "Wrong username or password!", logintFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), "Wrong username or password!", loginFile)
 		return nil
 	}
 
@@ -132,8 +247,21 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 		roles = append(roles, v.(string))
 	}
 
+	encodedPrivatekKey := x509.MarshalPKCS1PrivateKey(c.IDP.Key.(*rsa.PrivateKey))
+	claims := jwt.MapClaims{
+		"username": user["username"].(string),
+		"userId":   user["id"].(string),
+		"roles":    roles,
+		"email":    user["email"].(string),
+	}
+	tokenHS := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenStr, err := tokenHS.SignedString(encodedPrivatekKey)
+	if err != nil {
+		jormungandrSamlIdp.ErrorForm(w, r, fmt.Sprintf("A server error has occured. %s", err.Error()), 500, errorFile)
+	}
+
 	session := &saml.Session{
-		ID:            base64.StdEncoding.EncodeToString(jormungandrSamlIdp.RandomBytes(32)),
+		ID:            tokenStr,
 		CreateTime:    saml.TimeNow(),
 		ExpireTime:    saml.TimeNow().Add(sessionMaxAge),
 		Index:         hex.EncodeToString(jormungandrSamlIdp.RandomBytes(32)),

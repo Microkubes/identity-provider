@@ -42,7 +42,9 @@ type IdpController interface {
 	GetMetadata(*GetMetadataIdpContext) error
 	GetServiceProviders(*GetServiceProvidersIdpContext) error
 	GetSessions(*GetSessionsIdpContext) error
+	LoginUser(*LoginUserIdpContext) error
 	ServeLogin(*ServeLoginIdpContext) error
+	ServeLoginUser(*ServeLoginUserIdpContext) error
 	ServeSSO(*ServeSSOIdpContext) error
 }
 
@@ -174,6 +176,21 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 			return err
 		}
 		// Build the context
+		rctx, err := NewLoginUserIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.LoginUser(rctx)
+	}
+	service.Mux.Handle("GET", "/saml/idp/login", ctrl.MuxHandler("loginUser", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "LoginUser", "route", "GET /saml/idp/login")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
 		rctx, err := NewServeLoginIdpContext(ctx, req, service)
 		if err != nil {
 			return err
@@ -182,6 +199,21 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 	}
 	service.Mux.Handle("POST", "/saml/idp/sso", ctrl.MuxHandler("serveLogin", h, nil))
 	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLogin", "route", "POST /saml/idp/sso")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewServeLoginUserIdpContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.ServeLoginUser(rctx)
+	}
+	service.Mux.Handle("POST", "/saml/idp/login", ctrl.MuxHandler("serveLoginUser", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLoginUser", "route", "POST /saml/idp/login")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request

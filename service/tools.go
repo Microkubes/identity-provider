@@ -67,3 +67,7 @@ func postData(client *http.Client, payload []byte, url string) (*http.Response, 
 	resp, err := client.Post(fmt.Sprintf("%s", url), "application/json", bytes.NewBuffer(payload))
 	return resp, err
 }
+
+func checkUsercredential(username, password string) {
+
+}

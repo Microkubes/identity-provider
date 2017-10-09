@@ -249,6 +249,35 @@ func (c *Client) NewGetSessionsIdpRequest(ctx context.Context, path string) (*ht
 	return req, nil
 }
 
+// LoginUserIdpPath computes a request path to the loginUser action of idp.
+func LoginUserIdpPath() string {
+
+	return fmt.Sprintf("/saml/idp/login")
+}
+
+// Login user
+func (c *Client) LoginUserIdp(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewLoginUserIdpRequest(ctx, path)
+	if err != nil {
+		return nil, err
+	}
+	return c.Client.Do(ctx, req)
+}
+
+// NewLoginUserIdpRequest create the request corresponding to the loginUser action endpoint of the idp resource.
+func (c *Client) NewLoginUserIdpRequest(ctx context.Context, path string) (*http.Request, error) {
+	scheme := c.Scheme
+	if scheme == "" {
+		scheme = "http"
+	}
+	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
 // ServeLoginIdpPath computes a request path to the serveLogin action of idp.
 func ServeLoginIdpPath() string {
 
@@ -266,6 +295,35 @@ func (c *Client) ServeLoginIdp(ctx context.Context, path string) (*http.Response
 
 // NewServeLoginIdpRequest create the request corresponding to the serveLogin action endpoint of the idp resource.
 func (c *Client) NewServeLoginIdpRequest(ctx context.Context, path string) (*http.Request, error) {
+	scheme := c.Scheme
+	if scheme == "" {
+		scheme = "http"
+	}
+	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
+// ServeLoginUserIdpPath computes a request path to the serveLoginUser action of idp.
+func ServeLoginUserIdpPath() string {
+
+	return fmt.Sprintf("/saml/idp/login")
+}
+
+// Login user
+func (c *Client) ServeLoginUserIdp(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewServeLoginUserIdpRequest(ctx, path)
+	if err != nil {
+		return nil, err
+	}
+	return c.Client.Do(ctx, req)
+}
+
+// NewServeLoginUserIdpRequest create the request corresponding to the serveLoginUser action endpoint of the idp resource.
+func (c *Client) NewServeLoginUserIdpRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"

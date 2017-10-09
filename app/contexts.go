@@ -265,6 +265,25 @@ func (ctx *GetSessionsIdpContext) InternalServerError(r error) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
 }
 
+// LoginUserIdpContext provides the idp loginUser action context.
+type LoginUserIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewLoginUserIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller loginUser action.
+func NewLoginUserIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*LoginUserIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := LoginUserIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
 // ServeLoginIdpContext provides the idp serveLogin action context.
 type ServeLoginIdpContext struct {
 	context.Context
@@ -281,6 +300,25 @@ func NewServeLoginIdpContext(ctx context.Context, r *http.Request, service *goa.
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := ServeLoginIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// ServeLoginUserIdpContext provides the idp serveLoginUser action context.
+type ServeLoginUserIdpContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewServeLoginUserIdpContext parses the incoming request URL and body, performs validations and creates the
+// context used by the idp controller serveLoginUser action.
+func NewServeLoginUserIdpContext(ctx context.Context, r *http.Request, service *goa.Service) (*ServeLoginUserIdpContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := ServeLoginUserIdpContext{Context: ctx, ResponseData: resp, RequestData: req}
 	return &rctx, err
 }
 

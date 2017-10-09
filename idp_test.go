@@ -352,3 +352,70 @@ func TestServeLogin(t *testing.T) {
 
 	ctrl.ServeLogin(serveSSOCtx)
 }
+
+func TestLoginUser(t *testing.T) {
+	req, err := http.NewRequest("GET", "http://localhost:8080/saml/idp/login", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	prms := url.Values{}
+	rw := httptest.NewRecorder()
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "IdpTest"), rw, req, prms)
+
+	loginUserCtx, err := app.NewLoginUserIdpContext(goaCtx, req, goaService)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctrl.LoginUser(loginUserCtx)
+}
+
+func TestServeLoginUser(t *testing.T) {
+	config := []byte(`{
+	    "services": {
+	    	"microservice-user": "http://127.0.0.1:8081/users"
+	    },
+	   	"client": {
+			"redirect-from-login": "http://localhost:8082/profiles/me"
+		}
+	  }`)
+
+	err := ioutil.WriteFile("config.json", config, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.Remove("config.json")
+
+	gock.New("http://127.0.0.1:8081").
+		Post("/users").
+		Reply(200).
+		JSON(map[string]interface{}{
+			"id":         "59804b3c0000000000000000",
+			"fullname":   "Jon Smith",
+			"username":   "jon",
+			"email":      "jon@test.com",
+			"externalId": "qwe04b3c000000qwertydgfsd",
+			"roles":      []string{"admin", "user"},
+			"active":     false,
+		})
+
+	req, err := http.NewRequest("GET", "http://localhost:8080/saml/idp/sso?user=test&password=test123&RelayState=_L5_YvLMqRfj0KX5A62TIKfOHMYVeboixBRg8yYxIwSjp7wmjca2OIRA&SAMLRequest=nJJBj9MwEIX%2FijX3NE7CdlNrE6lshai0QLUtHLhNnCm15NjBMwH236M2i7RwqNBe7XnfvGe%2FO8bBj2Y9ySk80veJWNSvwQc254sGphRMRHZsAg7ERqzZrz88mHKhDTJTEhcDvJCM1zVjihJt9KC2mwZcn73BsqqON93t0tpiRcWqrrRdEna1LYpld2O17vqqrEF9ocQuhgbKhQa1ZZ5oG1gwSAOlLm%2BzQme6OpSFqbQp9GJV1V9BbYjFBZSL8iQymjz30aI%2FRRZT61rnZ9u568ecOYJa%2F0l1HwNPA6U9pR%2FO0ufHhxnA%2FxLKfGJK2Zji0XmacWgZ1O457FsXehe%2BXX%2BZbh5i8%2F5w2GW7T%2FsDtJffMZeoSb2LaUC5DjmfuD47XkYNBXHyBO1%2Fux5IsEfBu%2FzF4va5Ix9xoO1mF72zT68wIwkDOwoCau19%2FHmfCIUakDQR5O288u8mtr8DAAD%2F%2Fw%3D%3D", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	prms := url.Values{}
+	rw := httptest.NewRecorder()
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "IdpTest"), rw, req, prms)
+
+	serveLoginUserCtx, err := app.NewServeLoginUserIdpContext(goaCtx, req, goaService)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctrl.ServeLoginUser(serveLoginUserCtx)
+}

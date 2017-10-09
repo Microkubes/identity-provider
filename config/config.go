@@ -15,6 +15,9 @@ type Config struct {
 	// Services is a map of <service-name>:<service base URL>. For example,
 	// "user-microservice": "http://kong.gateway:8001/user"
 	Services map[string]string `json:"services"`
+	// Client is a map of <client-name>:<url>
+	// "redirect-from-login": "http://client-root-url"
+	Client map[string]string `json:"client"`
 }
 
 // LoadConfig loads a Config from a configuration JSON file.

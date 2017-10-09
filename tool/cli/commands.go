@@ -67,8 +67,18 @@ type (
 		PrettyPrint bool
 	}
 
+	// LoginUserIdpCommand is the command line data structure for the loginUser action of idp
+	LoginUserIdpCommand struct {
+		PrettyPrint bool
+	}
+
 	// ServeLoginIdpCommand is the command line data structure for the serveLogin action of idp
 	ServeLoginIdpCommand struct {
+		PrettyPrint bool
+	}
+
+	// ServeLoginUserIdpCommand is the command line data structure for the serveLoginUser action of idp
+	ServeLoginUserIdpCommand struct {
 		PrettyPrint bool
 	}
 
@@ -200,12 +210,12 @@ Payload example:
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "serve-login",
-		Short: `Creare user session`,
+		Use:   "login-user",
+		Short: `Login user`,
 	}
-	tmp8 := new(ServeLoginIdpCommand)
+	tmp8 := new(LoginUserIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/sso"]`,
+		Use:   `idp ["/saml/idp/login"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
 	}
@@ -214,10 +224,10 @@ Payload example:
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "servesso",
-		Short: `Serve Single Sign On`,
+		Use:   "serve-login",
+		Short: `Creare user session`,
 	}
-	tmp9 := new(ServeSSOIdpCommand)
+	tmp9 := new(ServeLoginIdpCommand)
 	sub = &cobra.Command{
 		Use:   `idp ["/saml/idp/sso"]`,
 		Short: ``,
@@ -225,6 +235,34 @@ Payload example:
 	}
 	tmp9.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp9.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "serve-login-user",
+		Short: `Login user`,
+	}
+	tmp10 := new(ServeLoginUserIdpCommand)
+	sub = &cobra.Command{
+		Use:   `idp ["/saml/idp/login"]`,
+		Short: ``,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp10.Run(c, args) },
+	}
+	tmp10.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp10.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "servesso",
+		Short: `Serve Single Sign On`,
+	}
+	tmp11 := new(ServeSSOIdpCommand)
+	sub = &cobra.Command{
+		Use:   `idp ["/saml/idp/sso"]`,
+		Short: ``,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp11.Run(c, args) },
+	}
+	tmp11.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp11.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 
@@ -642,6 +680,30 @@ func (cmd *GetSessionsIdpCommand) Run(c *client.Client, args []string) error {
 func (cmd *GetSessionsIdpCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 }
 
+// Run makes the HTTP request corresponding to the LoginUserIdpCommand command.
+func (cmd *LoginUserIdpCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = "/saml/idp/login"
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.LoginUserIdp(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *LoginUserIdpCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+}
+
 // Run makes the HTTP request corresponding to the ServeLoginIdpCommand command.
 func (cmd *ServeLoginIdpCommand) Run(c *client.Client, args []string) error {
 	var path string
@@ -664,6 +726,30 @@ func (cmd *ServeLoginIdpCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *ServeLoginIdpCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+}
+
+// Run makes the HTTP request corresponding to the ServeLoginUserIdpCommand command.
+func (cmd *ServeLoginUserIdpCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = "/saml/idp/login"
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.ServeLoginUserIdp(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *ServeLoginUserIdpCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 }
 
 // Run makes the HTTP request corresponding to the ServeSSOIdpCommand command.

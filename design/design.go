@@ -29,7 +29,14 @@ var _ = Resource("idp", func() {
 		Routing(GET("/metadata"))
 		Response(OK)
 	})
-
+	Action("loginUser", func() {
+		Description("Login user")
+		Routing(GET("/login"))
+	})
+	Action("serveLoginUser", func() {
+		Description("Login user")
+		Routing(POST("/login"))
+	})
 	Action("serveSSO", func() {
 		Description("Serve Single Sign On")
 		Routing(GET("/sso"))

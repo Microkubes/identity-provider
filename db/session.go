@@ -26,9 +26,6 @@ func (m *MongoCollections) GetSession(w http.ResponseWriter, r *http.Request, re
 		}
 
 		if saml.TimeNow().After(session.ExpireTime) {
-			// if err := m.DeleteSession(id); err != nil {
-			// 	return nil, goa.ErrInternal(err)
-			// }
 			return nil, goa.ErrInvalidRequest("session has expired")
 		}
 
@@ -40,7 +37,11 @@ func (m *MongoCollections) GetSession(w http.ResponseWriter, r *http.Request, re
 
 // AddSession adds new session in DB
 func (m *MongoCollections) AddSession(session *saml.Session) error {
-	if err := m.Sessions.Insert(session); err != nil {
+	_, err := m.Sessions.Upsert(
+		bson.M{"id": session.ID},
+		bson.M{"$set": session})
+
+	if err != nil {
 		return err
 	}
 
