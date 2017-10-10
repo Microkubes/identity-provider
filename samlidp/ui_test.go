@@ -60,5 +60,5 @@ func TestLoginForm(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	LoginForm(w, r, req, "", "../public/login/login-form.html")
+	LoginForm(w, r, req, "https://idp.example.com/saml/idp/login", "", "../public/login/login-form.html")
 }
