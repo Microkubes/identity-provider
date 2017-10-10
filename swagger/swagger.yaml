@@ -1,0 +1,349 @@
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+definitions:
+  DeleteSPPayload:
+    description: DeleteSPPayload
+    example:
+      serviceId: Itaque nam vel non quis porro tempora.
+    properties:
+      serviceId:
+        description: ID of service provider
+        example: Itaque nam vel non quis porro tempora.
+        type: string
+    required:
+    - serviceId
+    title: DeleteSPPayload
+    type: object
+  DeleteSessionPayload:
+    description: DeleteSessionPayload
+    example:
+      sessionId: Quod asperiores.
+    properties:
+      sessionId:
+        description: ID of the session
+        example: Quod asperiores.
+        type: string
+    required:
+    - sessionId
+    title: DeleteSessionPayload
+    type: object
+  error:
+    description: Error response media type (default view)
+    example:
+      code: invalid_value
+      detail: Value of ID must be an integer
+      id: 3F1FKVRR
+      meta:
+        timestamp: 1.458609e+09
+      status: "400"
+    properties:
+      code:
+        description: an application-specific error code, expressed as a string value.
+        example: invalid_value
+        type: string
+      detail:
+        description: a human-readable explanation specific to this occurrence of the
+          problem.
+        example: Value of ID must be an integer
+        type: string
+      id:
+        description: a unique identifier for this particular occurrence of the problem.
+        example: 3F1FKVRR
+        type: string
+      meta:
+        additionalProperties: true
+        description: a meta object containing non-standard meta-information about
+          the error.
+        example:
+          timestamp: 1.458609e+09
+        type: object
+      status:
+        description: the HTTP status code applicable to this problem, expressed as
+          a string value.
+        example: "400"
+        type: string
+    title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+    type: object
+host: localhost:8080
+info:
+  description: A service that act as saml identity provider
+  title: The saml identity provider microservice
+  version: "1.0"
+paths:
+  /css/{filepath}:
+    get:
+      operationId: public#/css/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: Download public/css
+  /js/{filepath}:
+    get:
+      operationId: public#/js/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: Download public/js
+  /saml/idp/login:
+    get:
+      description: Login user
+      operationId: idp#loginUser
+      schemes:
+      - http
+      summary: loginUser idp
+      tags:
+      - idp
+    post:
+      description: Login user
+      operationId: idp#serveLoginUser
+      schemes:
+      - http
+      summary: serveLoginUser idp
+      tags:
+      - idp
+  /saml/idp/metadata:
+    get:
+      description: Get Jormungandr metadata
+      operationId: idp#getMetadata
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      summary: getMetadata idp
+      tags:
+      - idp
+  /saml/idp/metadata/google:
+    get:
+      description: Get Google's metadata
+      operationId: idp#getGoogleMetadata
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      summary: getGoogleMetadata idp
+      tags:
+      - idp
+  /saml/idp/services:
+    delete:
+      description: Delete a service provider
+      operationId: idp#deleteServiceProvider
+      parameters:
+      - description: DeleteSPPayload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/DeleteSPPayload'
+      produces:
+      - application/vnd.goa.error
+      - text/plain
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: deleteServiceProvider idp
+      tags:
+      - idp
+    get:
+      description: Get all service providres
+      operationId: idp#getServiceProviders
+      produces:
+      - application/vnd.goa.error
+      - text/plain
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: getServiceProviders idp
+      tags:
+      - idp
+    post:
+      description: Add new service provider
+      operationId: idp#addServiceProvider
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: addServiceProvider idp
+      tags:
+      - idp
+  /saml/idp/sessions:
+    delete:
+      description: Delete a service provider
+      operationId: idp#deleteSession
+      parameters:
+      - description: DeleteSessionPayload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/DeleteSessionPayload'
+      produces:
+      - application/vnd.goa.error
+      - text/plain
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: deleteSession idp
+      tags:
+      - idp
+    get:
+      description: Get all sessions
+      operationId: idp#getSessions
+      produces:
+      - application/vnd.goa.error
+      - text/plain
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: getSessions idp
+      tags:
+      - idp
+  /saml/idp/sso:
+    get:
+      description: Serve Single Sign On
+      operationId: idp#serveSSO
+      schemes:
+      - http
+      summary: serveSSO idp
+      tags:
+      - idp
+    post:
+      description: Creare user session
+      operationId: idp#serveLogin
+      schemes:
+      - http
+      summary: serveLogin idp
+      tags:
+      - idp
+  /swagger-ui/{filepath}:
+    get:
+      operationId: swagger#/swagger-ui/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: Download swagger-ui/dist
+  /swagger.json:
+    get:
+      operationId: swagger#/swagger.json
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.json
+produces:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+responses:
+  Created:
+    description: Created
+  OK:
+    description: OK
+schemes:
+- http
+swagger: "2.0"
