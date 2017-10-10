@@ -104,18 +104,6 @@ func createSAMLIdP() (*samlidp.Server, error) {
 	return s, nil
 }
 
-func TestValidateCredentials(t *testing.T) {
-	err := ValidateCredentials("test", "test123")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = ValidateCredentials("a#$%", "zz")
-	if err == nil {
-		t.Fatal("Nil error for invalid username/password")
-	}
-}
-
 func TestValidateSamlRequest(t *testing.T) {
 	r, _ := http.NewRequest("GET", "https://idp.example.com/saml/sso?RelayState=_L5_YvLMqRfj0KX5A62TIKfOHMYVeboixBRg8yYxIwSjp7wmjca2OIRA&SAMLRequest=nJJBj9MwEIX%2FijX3NE7CdlNrE6lshai0QLUtHLhNnCm15NjBMwH236M2i7RwqNBe7XnfvGe%2FO8bBj2Y9ySk80veJWNSvwQc254sGphRMRHZsAg7ERqzZrz88mHKhDTJTEhcDvJCM1zVjihJt9KC2mwZcn73BsqqON93t0tpiRcWqrrRdEna1LYpld2O17vqqrEF9ocQuhgbKhQa1ZZ5oG1gwSAOlLm%2BzQme6OpSFqbQp9GJV1V9BbYjFBZSL8iQymjz30aI%2FRRZT61rnZ9u568ecOYJa%2F0l1HwNPA6U9pR%2FO0ufHhxnA%2FxLKfGJK2Zji0XmacWgZ1O457FsXehe%2BXX%2BZbh5i8%2F5w2GW7T%2FsDtJffMZeoSb2LaUC5DjmfuD47XkYNBXHyBO1%2Fux5IsEfBu%2FzF4va5Ix9xoO1mF72zT68wIwkDOwoCau19%2FHmfCIUakDQR5O288u8mtr8DAAD%2F%2Fw%3D%3D", nil)
 	s, err := createSAMLIdP()

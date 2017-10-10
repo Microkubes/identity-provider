@@ -194,12 +194,20 @@ Here's an example of a JSON configuration file:
 
 ```json
 {
-  "name": "identity-provider-microservice",
-  "port": 8080,
-  "virtual_host": "identity-provider.services.jormugandr.org",
-  "hosts": ["localhost", "identity-provider.services.jormugandr.org"],
-  "weight": 10,
-  "slots": 100
+	"microservice":	{
+		"name": "identity-provider-microservice",
+		"port": 8080,
+		"virtual_host": "identity-provider.services.jormugandr.org",
+		"hosts": ["localhost", "identity-provider.services.jormugandr.org"],
+		"weight": 10,
+		"slots": 100
+	},
+ 	"services": {
+		"microservice-user": "http://127.0.0.1:8001/users"
+	},
+	"client": {
+		"redirect-from-login": "http://localhost:8001/profiles/me"
+	}
 }
 ```
 
@@ -210,3 +218,17 @@ Configuration properties:
  * **hosts** - list of valid hosts. Used for proxying and load balancing of the incoming request. You need to have at least the **virtual_host** in the list.
  * **weight** - instance weight - use for load balancing.
  * **slots** - maximal number of service instances under ```"identity-provider.services.jormugandr.org"```.
+
+# Use SAML IdP to login the user
+
+In order to use SAML IdP to login the user you need to set redirect-from-login property in the config.json file:
+
+```json
+	"client": {
+		"redirect-from-login": "http://localhost:8001/profiles/me"
+	}
+```
+
+Then redirect user to the http://saml-ipd-url/saml/idp/login. After successfull log in, user will be redirected to the redirect-from-login url 
+which is specified in the config.json file. Also, cookie called session will be set which is JWT token that contains user information like username, email, userID, roles.  
+ 

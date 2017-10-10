@@ -1,8 +1,6 @@
 package main
 
 import (
-	"crypto/rsa"
-	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
 	"encoding/xml"
@@ -10,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/JormungandrK/identity-provider/app"
@@ -20,7 +17,6 @@ import (
 	"github.com/JormungandrK/identity-provider/service"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/goadesign/goa"
 )
 
@@ -113,41 +109,26 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 		RelayState:  "relayState",
 	}
 
-	username := strings.TrimSpace(r.FormValue("user"))
-	password := strings.TrimSpace(r.FormValue("password"))
-
-	if username == "" || password == "" {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "Credentials required!", loginFile)
-		return nil
-	}
-
-	if err := jormungandrSamlIdp.ValidateCredentials(username, password); err != nil {
+	username, password, err := service.CheckUserCredentials(r, w, req)
+	if err != nil {
 		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), err.Error(), loginFile)
 		return nil
 	}
 
-	user, err := service.FindUser(username, password)
+	user, err := service.FindUser(username, password, c.IDP)
 	if err != nil {
 		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "Wrong username or password!", loginFile)
 		return nil
 	}
 
+	tokenStr, err := service.GenerateSignedSAMLToken(c.IDP, user)
+	if err != nil {
+		jormungandrSamlIdp.ErrorForm(w, r, fmt.Sprintf("A server error has occured. %s", err.Error()), 500, errorFile)
+	}
+
 	roles := []string{}
 	for _, v := range user["roles"].([]interface{}) {
 		roles = append(roles, v.(string))
-	}
-
-	encodedPrivatekKey := x509.MarshalPKCS1PrivateKey(c.IDP.Key.(*rsa.PrivateKey))
-	claims := jwt.MapClaims{
-		"username": user["username"].(string),
-		"userId":   user["id"].(string),
-		"roles":    roles,
-		"email":    user["email"].(string),
-	}
-	tokenHS := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenStr, err := tokenHS.SignedString(encodedPrivatekKey)
-	if err != nil {
-		jormungandrSamlIdp.ErrorForm(w, r, fmt.Sprintf("A server error has occured. %s", err.Error()), 500, errorFile)
 	}
 
 	session := &saml.Session{
@@ -223,20 +204,13 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 		return nil
 	}
 
-	username := strings.TrimSpace(r.FormValue("user"))
-	password := strings.TrimSpace(r.FormValue("password"))
-
-	if username == "" || password == "" {
-		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), "Credentials required!", loginFile)
+	username, password, err := service.CheckUserCredentials(r, w, req)
+	if err != nil {
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", req.IDP.SSOURL.String()), err.Error(), loginFile)
 		return nil
 	}
 
-	if err := jormungandrSamlIdp.ValidateCredentials(username, password); err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), err.Error(), loginFile)
-		return nil
-	}
-
-	user, err := service.FindUser(username, password)
+	user, err := service.FindUser(username, password, c.IDP)
 	if err != nil {
 		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), "Wrong username or password!", loginFile)
 		return nil
@@ -247,15 +221,7 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 		roles = append(roles, v.(string))
 	}
 
-	encodedPrivatekKey := x509.MarshalPKCS1PrivateKey(c.IDP.Key.(*rsa.PrivateKey))
-	claims := jwt.MapClaims{
-		"username": user["username"].(string),
-		"userId":   user["id"].(string),
-		"roles":    roles,
-		"email":    user["email"].(string),
-	}
-	tokenHS := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenStr, err := tokenHS.SignedString(encodedPrivatekKey)
+	tokenStr, err := service.GenerateSignedSAMLToken(c.IDP, user)
 	if err != nil {
 		jormungandrSamlIdp.ErrorForm(w, r, fmt.Sprintf("A server error has occured. %s", err.Error()), 500, errorFile)
 	}

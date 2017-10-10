@@ -9,5 +9,8 @@
 	},
  	"services": {
 		"microservice-user": "http://127.0.0.1:8081/users"
+	},
+	"client": {
+		"redirect-from-login": "https://localhost:8082/profiles/me"
 	}
 }
