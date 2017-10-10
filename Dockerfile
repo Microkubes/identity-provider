@@ -15,7 +15,7 @@ RUN go get -u github.com/goadesign/goa/... && \
     go get -u github.com/zenazn/goji/web
 
 RUN go get -u github.com/JormungandrK/microservice-tools && \
-	go get -u "github.com/JormungandrK/microservice-security
+	go get -u github.com/JormungandrK/microservice-security
 
 COPY . /go/src/github.com/JormungandrK/identity-provider
 RUN go install github.com/JormungandrK/identity-provider
