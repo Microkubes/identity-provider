@@ -13,7 +13,7 @@ before_install:
   - go get -u github.com/axw/gocov/gocov
   - go get -u github.com/AlekSi/gocov-xml
   - go get -u github.com/JormungandrK/microservice-tools
-  - go get -u github.com/JormungandrK/microservice-security
+  - go get -u github.com/JormungandrK/microservice-security/...
   - go get -u github.com/goadesign/goa/...
   - go get -u gopkg.in/mgo.v2
   - go get -u gopkg.in/h2non/gock.v1
@@ -28,4 +28,3 @@ before_script:
 script:
   - gocov test github.com/JormungandrK/identity-provider/... | gocov-xml > coverage.xml
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build; fi
-
