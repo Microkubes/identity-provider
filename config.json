@@ -2,15 +2,15 @@
 	"microservice":	{
 		"name": "identity-provider-microservice",
 		"port": 8080,
-		"virtual_host": "identity-provider.services.jormugandr.org",
-		"hosts": ["localhost", "identity-provider.services.jormugandr.org"],
+		"virtual_host": "identity-provider.services.jormungandr.org",
+		"hosts": ["localhost", "identity-provider.services.jormungandr.org"],
 		"weight": 10,
 		"slots": 100
 	},
  	"services": {
-		"microservice-user": "http://127.0.0.1:8081/users"
+		"microservice-user": "http://127.0.0.1:8000/user"
 	},
 	"client": {
-		"redirect-from-login": "https://localhost:8082/profiles/me"
+		"redirect-from-login": "https://localhost:8000/profiles/me"
 	}
 }

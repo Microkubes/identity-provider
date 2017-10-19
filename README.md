@@ -1,4 +1,10 @@
 # identity-provider
+
+[![Build](https://travis-ci.com/JormungandrK/identity-provider.svg?token=UB5yzsLHNSbtjSYrGbWf&branch=master)](https://travis-ci.com/JormungandrK/identity-provider)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/5b9d9b87dc2f16a60709/test_coverage)](https://codeclimate.com/repos/59d79b8c3887ca028300021a/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5b9d9b87dc2f16a60709/maintainability)](https://codeclimate.com/repos/59d79b8c3887ca028300021a/maintainability)
+
+
 SAML identity provider
 
 ## Prerequisite
@@ -78,7 +84,7 @@ go get gopkg.in/mgo.v2
 
 ## Setting up the secret keys
 
-SAML IdP should use the same saml keys as service providers. 
+SAML IdP should use the same saml keys as service providers.
 
 In order to create them create a directory in which you'll keep your key-pair:
 
@@ -229,6 +235,5 @@ In order to use SAML IdP to login the user you need to set redirect-from-login p
 	}
 ```
 
-Then redirect user to the http://saml-ipd-url/saml/idp/login. After successfull log in, user will be redirected to the redirect-from-login url 
+Then redirect user to the http://saml-ipd-url/saml/idp/login. After successfull log in, user will be redirected to the redirect-from-login url
 which is specified in the config.json file. Also, cookie called session will be set which is JWT token that contains user information like username, email, userID, roles.  
- 
