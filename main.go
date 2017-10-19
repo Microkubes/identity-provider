@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/JormungandrK/identity-provider/app"
+	idpconfig "github.com/JormungandrK/identity-provider/config"
 	"github.com/JormungandrK/identity-provider/db"
 	jormungandrSamlIdp "github.com/JormungandrK/identity-provider/samlidp"
 	"github.com/JormungandrK/microservice-tools/gateway"
@@ -108,11 +109,16 @@ func loadGatewaySettings() (string, string) {
 
 func registerMicroservice() func() {
 	gatewayURL, configFile := loadGatewaySettings()
-	registration, err := gateway.NewKongGatewayFromConfigFile(gatewayURL, &http.Client{}, configFile)
+
+	conf, err := idpconfig.LoadConfig(configFile)
 	if err != nil {
 		panic(err)
 	}
+
+	registration := gateway.NewKongGateway(gatewayURL, &http.Client{}, &conf.Microservice)
+
 	err = registration.SelfRegister()
+	println("IdP registered on Kong")
 	if err != nil {
 		panic(err)
 	}
