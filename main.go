@@ -118,7 +118,6 @@ func registerMicroservice() func() {
 	registration := gateway.NewKongGateway(gatewayURL, &http.Client{}, &conf.Microservice)
 
 	err = registration.SelfRegister()
-	println("IdP registered on Kong")
 	if err != nil {
 		panic(err)
 	}

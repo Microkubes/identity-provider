@@ -99,6 +99,8 @@ func postData(client *http.Client, payload []byte, url string, idp *saml.Identit
 	cookie := http.Cookie{"token", tokenStr, "", "", expire, expire.Format(time.UnixDate), 86400, true, true, "", []string{}}
 	req.AddCookie(&cookie)
 
+	req.Host = "user.services.jormugandr.org"
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
