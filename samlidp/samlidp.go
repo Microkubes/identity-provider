@@ -24,7 +24,12 @@ func New(key, cert string) (*samlidp.Server, error) {
 		gatewayURL = "http://localhost:8080"
 	}
 
-	baseURL, err := url.Parse(fmt.Sprintf("%s/saml/idp", gatewayURL))
+	u, err := url.Parse(gatewayURL)
+	if err != nil {
+		return nil, err
+	}
+
+	baseURL, err := url.Parse(fmt.Sprintf("http://%s:8000/saml/idp", u.Hostname()))
 	if err != nil {
 		return nil, err
 	}

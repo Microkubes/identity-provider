@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -76,13 +77,18 @@ func (c *IdpController) LoginUser(ctx *app.LoginUserIdpContext) error {
 		gatewayURL = "http://localhost:8080"
 	}
 
+	u, err := url.Parse(gatewayURL)
+	if err != nil {
+		panic(err)
+	}
+
 	req := &saml.IdpAuthnRequest{
 		IDP:         c.IDP,
 		HTTPRequest: r,
 		RelayState:  "relayState",
 	}
 
-	jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "", loginFile)
+	jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("http://%s:8000/saml/idp/login", u.Hostname()), "", loginFile)
 
 	return nil
 }
@@ -98,6 +104,11 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 		gatewayURL = "http://localhost:8080"
 	}
 
+	u, err := url.Parse(gatewayURL)
+	if err != nil {
+		panic(err)
+	}
+
 	config, err := config.LoadConfig("")
 	if err != nil {
 		panic(err)
@@ -111,13 +122,13 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 
 	username, password, err := service.CheckUserCredentials(r, w, req)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), err.Error(), loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("http://%s:8000/saml/idp/login", u.Hostname()), err.Error(), loginFile)
 		return nil
 	}
 
 	user, err := service.FindUser(username, password, c.IDP)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "Wrong username or password!", loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("http://%s:8000/saml/idp/login", u.Hostname()), "Wrong username or password!", loginFile)
 		return nil
 	}
 
