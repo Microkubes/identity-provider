@@ -45,7 +45,7 @@ func main() {
 	indexesType := []string{"id"}
 	typeCollection := db.PrepareDB(session, database, "sessions", indexesType)
 
-	idpServer, err := jormungandrSamlIdp.New("saml-keys/service.cert", "saml-keys/service.key")
+	idpServer, err := jormungandrSamlIdp.New("/run/secrets/service.cert", "/run/secrets/service.key")
 	if err != nil {
 		service.LogError("Creation of SAML IDP server failed", "err", err)
 		return
@@ -118,7 +118,6 @@ func registerMicroservice() func() {
 	registration := gateway.NewKongGateway(gatewayURL, &http.Client{}, &conf.Microservice)
 
 	err = registration.SelfRegister()
-	println("IdP registered on Kong")
 	if err != nil {
 		panic(err)
 	}
