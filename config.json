@@ -8,9 +8,9 @@
 		"slots": 100
 	},
  	"services": {
-		"microservice-user": "http://192.168.99.100:8000/users"
+		"microservice-user": "http://kong:8000/users"
 	},
 	"client": {
-		"redirect-from-login": "https://localhost:8000/profiles/me"
+		"redirect-from-login": "https://kong:8000/profiles/me"
 	}
 }
