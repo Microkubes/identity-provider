@@ -98,7 +98,7 @@ func loadGatewaySettings() (string, string) {
 	serviceConfigFile := os.Getenv("SERVICE_CONFIG_FILE")
 
 	if gatewayURL == "" {
-		gatewayURL = "http://localhost:8001"
+		gatewayURL = "http://kong:8001"
 	}
 	if serviceConfigFile == "" {
 		serviceConfigFile = "config.json"

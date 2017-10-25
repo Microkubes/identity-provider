@@ -94,28 +94,7 @@ paths:
       schemes:
       - http
       summary: Download public/css
-  /js/{filepath}:
-    get:
-      operationId: public#/js/*filepath
-      parameters:
-      - description: Relative file path
-        in: path
-        name: filepath
-        required: true
-        type: string
-      responses:
-        "200":
-          description: File downloaded
-          schema:
-            type: file
-        "404":
-          description: File not found
-          schema:
-            $ref: '#/definitions/error'
-      schemes:
-      - http
-      summary: Download public/js
-  /saml/idp/login:
+  /idp/login:
     get:
       description: Login user
       operationId: idp#loginUser
@@ -132,7 +111,7 @@ paths:
       summary: serveLoginUser idp
       tags:
       - idp
-  /saml/idp/metadata:
+  /idp/metadata:
     get:
       description: Get Jormungandr metadata
       operationId: idp#getMetadata
@@ -146,7 +125,7 @@ paths:
       summary: getMetadata idp
       tags:
       - idp
-  /saml/idp/metadata/google:
+  /idp/metadata/google:
     get:
       description: Get Google's metadata
       operationId: idp#getGoogleMetadata
@@ -160,7 +139,7 @@ paths:
       summary: getGoogleMetadata idp
       tags:
       - idp
-  /saml/idp/services:
+  /idp/services:
     delete:
       description: Delete a service provider
       operationId: idp#deleteServiceProvider
@@ -172,6 +151,7 @@ paths:
         schema:
           $ref: '#/definitions/DeleteSPPayload'
       produces:
+      - application/vnd.goa.error
       - application/vnd.goa.error
       - text/plain
       responses:
@@ -195,6 +175,7 @@ paths:
       operationId: idp#getServiceProviders
       produces:
       - application/vnd.goa.error
+      - application/vnd.goa.error
       - text/plain
       responses:
         "200":
@@ -217,6 +198,7 @@ paths:
       operationId: idp#addServiceProvider
       produces:
       - application/vnd.goa.error
+      - application/vnd.goa.error
       responses:
         "201":
           description: Created
@@ -233,7 +215,7 @@ paths:
       summary: addServiceProvider idp
       tags:
       - idp
-  /saml/idp/sessions:
+  /idp/sessions:
     delete:
       description: Delete a service provider
       operationId: idp#deleteSession
@@ -245,6 +227,7 @@ paths:
         schema:
           $ref: '#/definitions/DeleteSessionPayload'
       produces:
+      - application/vnd.goa.error
       - application/vnd.goa.error
       - text/plain
       responses:
@@ -268,6 +251,7 @@ paths:
       operationId: idp#getSessions
       produces:
       - application/vnd.goa.error
+      - application/vnd.goa.error
       - text/plain
       responses:
         "200":
@@ -285,7 +269,7 @@ paths:
       summary: getSessions idp
       tags:
       - idp
-  /saml/idp/sso:
+  /idp/sso:
     get:
       description: Serve Single Sign On
       operationId: idp#serveSSO
@@ -302,6 +286,27 @@ paths:
       summary: serveLogin idp
       tags:
       - idp
+  /js/{filepath}:
+    get:
+      operationId: public#/js/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: Download public/js
   /swagger-ui/{filepath}:
     get:
       operationId: swagger#/swagger-ui/*filepath

@@ -176,18 +176,18 @@ Find your host IP using ```ifconfig``` or ```ip addr```.
 Assuming your host IP is 192.168.1.10, then run:
 
 ```bash
-docker run -ti -e API_GATEWAY_URL=http://192.168.1.10:8001 -e MONGO_URL=192.168.1.10:27017 identity-provider
+docker run -ti -e API_GATEWAY_URL=http://kong:8001 -e MONGO_URL=mongo:27017 identity-provider
 ```
 
 Also, you can build and run docker image using Makefile. Run:
 ```bash
-make run ARGS="-e API_GATEWAY_URL=http://192.168.1.10:8001 -e MONGO_URL=192.168.1.10:27017"
+make run ARGS="-e API_GATEWAY_URL=http://kong:8001 -e MONGO_URL=mongo:27017"
 ```
 
 If there are no errors, on a different terminal try calling Kong on port :8000
 
 ```bash
-curl -v --header "Host: identity-provider.services.jormugandr.org" http://localhost:8000/saml/idp/metadata/google
+curl -v --header "Host: identity-provider.services.jormugandr.org" http://kong:8000/saml/idp/metadata/google
 ```
 
 You should see output (log) in the container running the service.
@@ -209,10 +209,10 @@ Here's an example of a JSON configuration file:
 		"slots": 100
 	},
  	"services": {
-		"microservice-user": "http://127.0.0.1:8001/users"
+		"microservice-user": "http://kong:8000/users"
 	},
 	"client": {
-		"redirect-from-login": "http://localhost:8001/profiles/me"
+		"redirect-from-login": "http://kong:8000/profiles/me"
 	}
 }
 ```
@@ -231,7 +231,7 @@ In order to use SAML IdP to login the user you need to set redirect-from-login p
 
 ```json
 	"client": {
-		"redirect-from-login": "http://localhost:8001/profiles/me"
+		"redirect-from-login": "http://kong:8000/profiles/me"
 	}
 ```
 
