@@ -17,7 +17,7 @@ var _ = API("identity provider", func() {
 
 // Resources group related API endpoints together.
 var _ = Resource("idp", func() {
-	BasePath("/idp")
+	BasePath("/saml/idp")
 
 	Action("getGoogleMetadata", func() {
 		Description("Get Google's metadata")

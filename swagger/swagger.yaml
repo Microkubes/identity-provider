@@ -94,7 +94,28 @@ paths:
       schemes:
       - http
       summary: Download public/css
-  /idp/login:
+  /js/{filepath}:
+    get:
+      operationId: public#/js/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: Download public/js
+  /saml/idp/login:
     get:
       description: Login user
       operationId: idp#loginUser
@@ -111,7 +132,7 @@ paths:
       summary: serveLoginUser idp
       tags:
       - idp
-  /idp/metadata:
+  /saml/idp/metadata:
     get:
       description: Get Jormungandr metadata
       operationId: idp#getMetadata
@@ -125,7 +146,7 @@ paths:
       summary: getMetadata idp
       tags:
       - idp
-  /idp/metadata/google:
+  /saml/idp/metadata/google:
     get:
       description: Get Google's metadata
       operationId: idp#getGoogleMetadata
@@ -139,7 +160,7 @@ paths:
       summary: getGoogleMetadata idp
       tags:
       - idp
-  /idp/services:
+  /saml/idp/services:
     delete:
       description: Delete a service provider
       operationId: idp#deleteServiceProvider
@@ -215,7 +236,7 @@ paths:
       summary: addServiceProvider idp
       tags:
       - idp
-  /idp/sessions:
+  /saml/idp/sessions:
     delete:
       description: Delete a service provider
       operationId: idp#deleteSession
@@ -269,7 +290,7 @@ paths:
       summary: getSessions idp
       tags:
       - idp
-  /idp/sso:
+  /saml/idp/sso:
     get:
       description: Serve Single Sign On
       operationId: idp#serveSSO
@@ -286,27 +307,6 @@ paths:
       summary: serveLogin idp
       tags:
       - idp
-  /js/{filepath}:
-    get:
-      operationId: public#/js/*filepath
-      parameters:
-      - description: Relative file path
-        in: path
-        name: filepath
-        required: true
-        type: string
-      responses:
-        "200":
-          description: File downloaded
-          schema:
-            type: file
-        "404":
-          description: File not found
-          schema:
-            $ref: '#/definitions/error'
-      schemes:
-      - http
-      summary: Download public/js
   /swagger-ui/{filepath}:
     get:
       operationId: swagger#/swagger-ui/*filepath

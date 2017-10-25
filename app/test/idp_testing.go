@@ -49,7 +49,7 @@ func AddServiceProviderIdpBadRequest(t goatest.TInterface, ctx context.Context, 
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -113,7 +113,7 @@ func AddServiceProviderIdpCreated(t goatest.TInterface, ctx context.Context, ser
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -169,7 +169,7 @@ func AddServiceProviderIdpInternalServerError(t goatest.TInterface, ctx context.
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
@@ -243,7 +243,7 @@ func DeleteServiceProviderIdpInternalServerError(t goatest.TInterface, ctx conte
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, _err := http.NewRequest("DELETE", u.String(), nil)
 	if _err != nil {
@@ -318,7 +318,7 @@ func DeleteServiceProviderIdpNotFound(t goatest.TInterface, ctx context.Context,
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, _err := http.NewRequest("DELETE", u.String(), nil)
 	if _err != nil {
@@ -394,7 +394,7 @@ func DeleteServiceProviderIdpOK(t goatest.TInterface, ctx context.Context, servi
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, _err := http.NewRequest("DELETE", u.String(), nil)
 	if _err != nil {
@@ -461,7 +461,7 @@ func DeleteSessionIdpInternalServerError(t goatest.TInterface, ctx context.Conte
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/sessions"),
+		Path: fmt.Sprintf("/saml/idp/sessions"),
 	}
 	req, _err := http.NewRequest("DELETE", u.String(), nil)
 	if _err != nil {
@@ -536,7 +536,7 @@ func DeleteSessionIdpNotFound(t goatest.TInterface, ctx context.Context, service
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/sessions"),
+		Path: fmt.Sprintf("/saml/idp/sessions"),
 	}
 	req, _err := http.NewRequest("DELETE", u.String(), nil)
 	if _err != nil {
@@ -612,7 +612,7 @@ func DeleteSessionIdpOK(t goatest.TInterface, ctx context.Context, service *goa.
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/sessions"),
+		Path: fmt.Sprintf("/saml/idp/sessions"),
 	}
 	req, _err := http.NewRequest("DELETE", u.String(), nil)
 	if _err != nil {
@@ -669,7 +669,7 @@ func GetGoogleMetadataIdpOK(t goatest.TInterface, ctx context.Context, service *
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/metadata/google"),
+		Path: fmt.Sprintf("/saml/idp/metadata/google"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -725,7 +725,7 @@ func GetMetadataIdpOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/metadata"),
+		Path: fmt.Sprintf("/saml/idp/metadata"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -781,7 +781,7 @@ func GetServiceProvidersIdpInternalServerError(t goatest.TInterface, ctx context
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -845,7 +845,7 @@ func GetServiceProvidersIdpNotFound(t goatest.TInterface, ctx context.Context, s
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -909,7 +909,7 @@ func GetServiceProvidersIdpOK(t goatest.TInterface, ctx context.Context, service
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/services"),
+		Path: fmt.Sprintf("/saml/idp/services"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -965,7 +965,7 @@ func GetSessionsIdpInternalServerError(t goatest.TInterface, ctx context.Context
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/sessions"),
+		Path: fmt.Sprintf("/saml/idp/sessions"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -1029,7 +1029,7 @@ func GetSessionsIdpNotFound(t goatest.TInterface, ctx context.Context, service *
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/sessions"),
+		Path: fmt.Sprintf("/saml/idp/sessions"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -1093,7 +1093,7 @@ func GetSessionsIdpOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/idp/sessions"),
+		Path: fmt.Sprintf("/saml/idp/sessions"),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {

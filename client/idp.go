@@ -21,7 +21,7 @@ import (
 // AddServiceProviderIdpPath computes a request path to the addServiceProvider action of idp.
 func AddServiceProviderIdpPath() string {
 
-	return fmt.Sprintf("/idp/services")
+	return fmt.Sprintf("/saml/idp/services")
 }
 
 // Add new service provider
@@ -50,7 +50,7 @@ func (c *Client) NewAddServiceProviderIdpRequest(ctx context.Context, path strin
 // DeleteServiceProviderIdpPath computes a request path to the deleteServiceProvider action of idp.
 func DeleteServiceProviderIdpPath() string {
 
-	return fmt.Sprintf("/idp/services")
+	return fmt.Sprintf("/saml/idp/services")
 }
 
 // Delete a service provider
@@ -93,7 +93,7 @@ func (c *Client) NewDeleteServiceProviderIdpRequest(ctx context.Context, path st
 // DeleteSessionIdpPath computes a request path to the deleteSession action of idp.
 func DeleteSessionIdpPath() string {
 
-	return fmt.Sprintf("/idp/sessions")
+	return fmt.Sprintf("/saml/idp/sessions")
 }
 
 // Delete a service provider
@@ -136,7 +136,7 @@ func (c *Client) NewDeleteSessionIdpRequest(ctx context.Context, path string, pa
 // GetGoogleMetadataIdpPath computes a request path to the getGoogleMetadata action of idp.
 func GetGoogleMetadataIdpPath() string {
 
-	return fmt.Sprintf("/idp/metadata/google")
+	return fmt.Sprintf("/saml/idp/metadata/google")
 }
 
 // Get Google's metadata
@@ -165,7 +165,7 @@ func (c *Client) NewGetGoogleMetadataIdpRequest(ctx context.Context, path string
 // GetMetadataIdpPath computes a request path to the getMetadata action of idp.
 func GetMetadataIdpPath() string {
 
-	return fmt.Sprintf("/idp/metadata")
+	return fmt.Sprintf("/saml/idp/metadata")
 }
 
 // Get Jormungandr metadata
@@ -194,7 +194,7 @@ func (c *Client) NewGetMetadataIdpRequest(ctx context.Context, path string) (*ht
 // GetServiceProvidersIdpPath computes a request path to the getServiceProviders action of idp.
 func GetServiceProvidersIdpPath() string {
 
-	return fmt.Sprintf("/idp/services")
+	return fmt.Sprintf("/saml/idp/services")
 }
 
 // Get all service providres
@@ -223,7 +223,7 @@ func (c *Client) NewGetServiceProvidersIdpRequest(ctx context.Context, path stri
 // GetSessionsIdpPath computes a request path to the getSessions action of idp.
 func GetSessionsIdpPath() string {
 
-	return fmt.Sprintf("/idp/sessions")
+	return fmt.Sprintf("/saml/idp/sessions")
 }
 
 // Get all sessions
@@ -252,7 +252,7 @@ func (c *Client) NewGetSessionsIdpRequest(ctx context.Context, path string) (*ht
 // LoginUserIdpPath computes a request path to the loginUser action of idp.
 func LoginUserIdpPath() string {
 
-	return fmt.Sprintf("/idp/login")
+	return fmt.Sprintf("/saml/idp/login")
 }
 
 // Login user
@@ -281,7 +281,7 @@ func (c *Client) NewLoginUserIdpRequest(ctx context.Context, path string) (*http
 // ServeLoginIdpPath computes a request path to the serveLogin action of idp.
 func ServeLoginIdpPath() string {
 
-	return fmt.Sprintf("/idp/sso")
+	return fmt.Sprintf("/saml/idp/sso")
 }
 
 // Creare user session
@@ -310,7 +310,7 @@ func (c *Client) NewServeLoginIdpRequest(ctx context.Context, path string) (*htt
 // ServeLoginUserIdpPath computes a request path to the serveLoginUser action of idp.
 func ServeLoginUserIdpPath() string {
 
-	return fmt.Sprintf("/idp/login")
+	return fmt.Sprintf("/saml/idp/login")
 }
 
 // Login user
@@ -339,7 +339,7 @@ func (c *Client) NewServeLoginUserIdpRequest(ctx context.Context, path string) (
 // ServeSSOIdpPath computes a request path to the serveSSO action of idp.
 func ServeSSOIdpPath() string {
 
-	return fmt.Sprintf("/idp/sso")
+	return fmt.Sprintf("/saml/idp/sso")
 }
 
 // Serve Single Sign On

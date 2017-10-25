@@ -65,8 +65,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.AddServiceProvider(rctx)
 	}
-	service.Mux.Handle("POST", "/idp/services", ctrl.MuxHandler("addServiceProvider", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "AddServiceProvider", "route", "POST /idp/services")
+	service.Mux.Handle("POST", "/saml/idp/services", ctrl.MuxHandler("addServiceProvider", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "AddServiceProvider", "route", "POST /saml/idp/services")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -86,8 +86,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.DeleteServiceProvider(rctx)
 	}
-	service.Mux.Handle("DELETE", "/idp/services", ctrl.MuxHandler("deleteServiceProvider", h, unmarshalDeleteServiceProviderIdpPayload))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteServiceProvider", "route", "DELETE /idp/services")
+	service.Mux.Handle("DELETE", "/saml/idp/services", ctrl.MuxHandler("deleteServiceProvider", h, unmarshalDeleteServiceProviderIdpPayload))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteServiceProvider", "route", "DELETE /saml/idp/services")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -107,8 +107,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.DeleteSession(rctx)
 	}
-	service.Mux.Handle("DELETE", "/idp/sessions", ctrl.MuxHandler("deleteSession", h, unmarshalDeleteSessionIdpPayload))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteSession", "route", "DELETE /idp/sessions")
+	service.Mux.Handle("DELETE", "/saml/idp/sessions", ctrl.MuxHandler("deleteSession", h, unmarshalDeleteSessionIdpPayload))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteSession", "route", "DELETE /saml/idp/sessions")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -122,8 +122,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.GetGoogleMetadata(rctx)
 	}
-	service.Mux.Handle("GET", "/idp/metadata/google", ctrl.MuxHandler("getGoogleMetadata", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "GetGoogleMetadata", "route", "GET /idp/metadata/google")
+	service.Mux.Handle("GET", "/saml/idp/metadata/google", ctrl.MuxHandler("getGoogleMetadata", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetGoogleMetadata", "route", "GET /saml/idp/metadata/google")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -137,8 +137,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.GetMetadata(rctx)
 	}
-	service.Mux.Handle("GET", "/idp/metadata", ctrl.MuxHandler("getMetadata", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "GetMetadata", "route", "GET /idp/metadata")
+	service.Mux.Handle("GET", "/saml/idp/metadata", ctrl.MuxHandler("getMetadata", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetMetadata", "route", "GET /saml/idp/metadata")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -152,8 +152,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.GetServiceProviders(rctx)
 	}
-	service.Mux.Handle("GET", "/idp/services", ctrl.MuxHandler("getServiceProviders", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "GetServiceProviders", "route", "GET /idp/services")
+	service.Mux.Handle("GET", "/saml/idp/services", ctrl.MuxHandler("getServiceProviders", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetServiceProviders", "route", "GET /saml/idp/services")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -167,8 +167,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.GetSessions(rctx)
 	}
-	service.Mux.Handle("GET", "/idp/sessions", ctrl.MuxHandler("getSessions", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "GetSessions", "route", "GET /idp/sessions")
+	service.Mux.Handle("GET", "/saml/idp/sessions", ctrl.MuxHandler("getSessions", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetSessions", "route", "GET /saml/idp/sessions")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -182,8 +182,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.LoginUser(rctx)
 	}
-	service.Mux.Handle("GET", "/idp/login", ctrl.MuxHandler("loginUser", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "LoginUser", "route", "GET /idp/login")
+	service.Mux.Handle("GET", "/saml/idp/login", ctrl.MuxHandler("loginUser", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "LoginUser", "route", "GET /saml/idp/login")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -197,8 +197,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.ServeLogin(rctx)
 	}
-	service.Mux.Handle("POST", "/idp/sso", ctrl.MuxHandler("serveLogin", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLogin", "route", "POST /idp/sso")
+	service.Mux.Handle("POST", "/saml/idp/sso", ctrl.MuxHandler("serveLogin", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLogin", "route", "POST /saml/idp/sso")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -212,8 +212,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.ServeLoginUser(rctx)
 	}
-	service.Mux.Handle("POST", "/idp/login", ctrl.MuxHandler("serveLoginUser", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLoginUser", "route", "POST /idp/login")
+	service.Mux.Handle("POST", "/saml/idp/login", ctrl.MuxHandler("serveLoginUser", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLoginUser", "route", "POST /saml/idp/login")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -227,8 +227,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		}
 		return ctrl.ServeSSO(rctx)
 	}
-	service.Mux.Handle("GET", "/idp/sso", ctrl.MuxHandler("serveSSO", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeSSO", "route", "GET /idp/sso")
+	service.Mux.Handle("GET", "/saml/idp/sso", ctrl.MuxHandler("serveSSO", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeSSO", "route", "GET /saml/idp/sso")
 }
 
 // unmarshalDeleteServiceProviderIdpPayload unmarshals the request body into the context request data Payload field.
