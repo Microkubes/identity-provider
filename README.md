@@ -132,12 +132,12 @@ make run ARGS="-e API_GATEWAY_URL=http://192.168.1.10:8001 -e MONGO_URL=192.168.
 
 To run the identity-provider microservice you'll need to set up some ENV variables:
 
- * **SERVICE_CONFIG_FILE** - Location of the configuration JSON file (default: config.json)
+ * **SERVICE_CONFIG_FILE** - Location of the configuration JSON file
  * **API_GATEWAY_URL** - Kong API url (default: http://localhost:8001)
  * **MONGO_URL** - Host IP(example: 192.168.1.10:27017)
- * **MS_USERNAME** - Mongo username
- * **MS_PASSWORD** - Mongo password
- * **MS_DBNAME** - Mongo database name
+ * **MS_USERNAME** - Mongo username (default: restapi)
+ * **MS_PASSWORD** - Mongo password (default: restapi)
+ * **MS_DBNAME** - Mongo database name (default: identity-provider)
 
 Run the docker image:
 ```bash
@@ -194,8 +194,8 @@ You should see output (log) in the container running the service.
 
 # Service configuration
 
-The service loads the gateway configuration from a JSON file (See **SERVICE_CONFIG_FILE**
-ENV variable).
+The service loads the gateway configuration from a JSON file /run/secrets/microservice_identity_provider_config.json. To change the path set the
+**SERVICE_CONFIG_FILE** env var.
 Here's an example of a JSON configuration file:
 
 ```json

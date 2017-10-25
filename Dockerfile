@@ -25,11 +25,9 @@ RUN go install github.com/JormungandrK/identity-provider
 FROM alpine:3.6
 
 COPY --from=build /go/bin/identity-provider /usr/local/bin/identity-provider
-COPY config.json /config.json
 COPY public /public
 EXPOSE 8080
 
-ENV SERVICE_CONFIG_FILE="config.json"
 ENV API_GATEWAY_URL="http://localhost:8001"
 
 CMD ["/usr/local/bin/identity-provider"]
