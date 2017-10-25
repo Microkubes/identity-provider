@@ -21,7 +21,7 @@ func New(key, cert string) (*samlidp.Server, error) {
 
 	gatewayURL := os.Getenv("API_GATEWAY_URL")
 	if gatewayURL == "" {
-		gatewayURL = "http://localhost:8080"
+		gatewayURL = "http://kong:8000"
 	}
 
 	baseURL, err := url.Parse(fmt.Sprintf("%s/saml/idp", gatewayURL))

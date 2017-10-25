@@ -73,7 +73,7 @@ func (c *IdpController) LoginUser(ctx *app.LoginUserIdpContext) error {
 
 	gatewayURL := os.Getenv("API_GATEWAY_URL")
 	if gatewayURL == "" {
-		gatewayURL = "http://localhost:8080"
+		gatewayURL = "http://kong:8000"
 	}
 
 	req := &saml.IdpAuthnRequest{
@@ -95,7 +95,7 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 
 	gatewayURL := os.Getenv("API_GATEWAY_URL")
 	if gatewayURL == "" {
-		gatewayURL = "http://localhost:8080"
+		gatewayURL = "http://kong:8000"
 	}
 
 	config, err := config.LoadConfig("")
