@@ -173,6 +173,7 @@ paths:
           $ref: '#/definitions/DeleteSPPayload'
       produces:
       - application/vnd.goa.error
+      - application/vnd.goa.error
       - text/plain
       responses:
         "200":
@@ -195,6 +196,7 @@ paths:
       operationId: idp#getServiceProviders
       produces:
       - application/vnd.goa.error
+      - application/vnd.goa.error
       - text/plain
       responses:
         "200":
@@ -216,6 +218,7 @@ paths:
       description: Add new service provider
       operationId: idp#addServiceProvider
       produces:
+      - application/vnd.goa.error
       - application/vnd.goa.error
       responses:
         "201":
@@ -246,6 +249,7 @@ paths:
           $ref: '#/definitions/DeleteSessionPayload'
       produces:
       - application/vnd.goa.error
+      - application/vnd.goa.error
       - text/plain
       responses:
         "200":
@@ -267,6 +271,7 @@ paths:
       description: Get all sessions
       operationId: idp#getSessions
       produces:
+      - application/vnd.goa.error
       - application/vnd.goa.error
       - text/plain
       responses:

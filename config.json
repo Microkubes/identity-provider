@@ -2,8 +2,8 @@
 	"microservice":	{
 		"name": "identity-provider-microservice",
 		"port": 8080,
+		"paths": ["/saml"],
 		"virtual_host": "identity-provider.services.jormungandr.org",
-		"hosts": ["localhost", "identity-provider.services.jormungandr.org"],
 		"weight": 10,
 		"slots": 100
 	},
