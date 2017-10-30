@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -14,10 +15,11 @@ import (
 	"time"
 
 	"github.com/JormungandrK/identity-provider/config"
-	jormungandrSaml "github.com/JormungandrK/microservice-security/saml"
+	// jormungandrSaml "github.com/JormungandrK/microservice-security/saml"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/crewjam/saml"
 	jwt "github.com/dgrijalva/jwt-go"
+	uuid "github.com/satori/go.uuid"
 )
 
 // FindUser retrives the user by username and password
@@ -67,27 +69,42 @@ func FindUser(username string, password string, idp *saml.IdentityProvider, cfg 
 
 // postData makes post request
 func postData(client *http.Client, payload []byte, url string, idp *saml.IdentityProvider, cfg *config.Config) (*http.Response, error) {
+	key, err := ioutil.ReadFile(cfg.SystemKey)
+	if err != nil {
+		return nil, err
+	}
+
+	block, _ := pem.Decode(key)
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	claims := jwt.MapClaims{
+		"iss":      "identity-provider",
+		"exp":      time.Now().Add(time.Duration(30) * time.Second).Unix(),
+		"jti":      uuid.NewV4().String(),
+		"nbf":      0,
+		"sub":      "identity-provider",
+		"scope":    "api:read",
+		"userId":   "system",
+		"username": "system",
+		"roles":    "system",
+	}
+
+	tokenRS := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	token, err := tokenRS.SignedString(privateKey)
+	if err != nil {
+		return nil, err
+	}
+
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
 	}
 
-	expire := time.Now().AddDate(0, 0, 1)
-	encodedPrivatekKey := x509.MarshalPKCS1PrivateKey(idp.Key.(*rsa.PrivateKey))
-	claims := jormungandrSaml.TokenClaims{}
-	claims.Audience = fmt.Sprintf("%s/saml/metadata", cfg.Services["microservice-user"])
-	claims.Attributes = map[string][]string{
-		"userId":   []string{"system"},
-		"username": []string{"system"},
-		"roles":    []string{"system"},
-	}
-	tokenHS := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenStr, err := tokenHS.SignedString(encodedPrivatekKey)
-	if err != nil {
-		return nil, err
-	}
-	cookie := http.Cookie{"token", tokenStr, "", "", expire, expire.Format(time.UnixDate), 86400, true, true, "", []string{}}
-	req.AddCookie(&cookie)
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	resp, err := client.Do(req)
 	if err != nil {
