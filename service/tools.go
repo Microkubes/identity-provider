@@ -21,12 +21,7 @@ import (
 )
 
 // FindUser retrives the user by username and password
-func FindUser(username string, password string, idp *saml.IdentityProvider) (map[string]interface{}, error) {
-	config, err := config.LoadConfig("")
-	if err != nil {
-		panic(err)
-	}
-
+func FindUser(username string, password string, idp *saml.IdentityProvider, cfg *config.Config) (map[string]interface{}, error) {
 	userPayload := map[string]interface{}{
 		"username": username,
 		"password": password,
@@ -39,7 +34,7 @@ func FindUser(username string, password string, idp *saml.IdentityProvider) (map
 	client := &http.Client{}
 	output := make(chan *http.Response, 1)
 	errorsChan := hystrix.Go("user-microservice.find_by_email", func() error {
-		resp, err := postData(client, payload, fmt.Sprintf("%s/find", config.Services["microservice-user"]), idp)
+		resp, err := postData(client, payload, fmt.Sprintf("%s/find", cfg.Services["microservice-user"]), idp, cfg)
 		if err != nil {
 			return err
 		}
@@ -71,12 +66,7 @@ func FindUser(username string, password string, idp *saml.IdentityProvider) (map
 }
 
 // postData makes post request
-func postData(client *http.Client, payload []byte, url string, idp *saml.IdentityProvider) (*http.Response, error) {
-	config, err := config.LoadConfig("")
-	if err != nil {
-		return nil, err
-	}
-
+func postData(client *http.Client, payload []byte, url string, idp *saml.IdentityProvider, cfg *config.Config) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
@@ -85,7 +75,7 @@ func postData(client *http.Client, payload []byte, url string, idp *saml.Identit
 	expire := time.Now().AddDate(0, 0, 1)
 	encodedPrivatekKey := x509.MarshalPKCS1PrivateKey(idp.Key.(*rsa.PrivateKey))
 	claims := jormungandrSaml.TokenClaims{}
-	claims.Audience = fmt.Sprintf("%s/saml/metadata", config.Services["microservice-user"])
+	claims.Audience = fmt.Sprintf("%s/saml/metadata", cfg.Services["microservice-user"])
 	claims.Attributes = map[string][]string{
 		"userId":   []string{"system"},
 		"username": []string{"system"},

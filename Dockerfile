@@ -8,14 +8,14 @@ RUN chmod 700 /root/.ssh/id_rsa && \
     echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config && \
     git config --global url."ssh://git@github.com:".insteadOf "https://github.com"
 
-RUN go get -u github.com/goadesign/goa/... && \
-    go get -u gopkg.in/mgo.v2 && \
-    go get -u github.com/afex/hystrix-go/hystrix && \
-    go get -u github.com/crewjam/saml && \
-    go get -u github.com/zenazn/goji/web
+RUN go get -u -v github.com/goadesign/goa/... && \
+    go get -u -v gopkg.in/mgo.v2 && \
+    go get -u -v github.com/afex/hystrix-go/hystrix && \
+    go get -u -v github.com/crewjam/saml && \
+    go get -u -v github.com/zenazn/goji/web
 
-RUN go get -u github.com/JormungandrK/microservice-tools && \
-	go get -u github.com/JormungandrK/microservice-security/...
+RUN go get -u -v github.com/JormungandrK/microservice-tools && \
+	go get -u -v github.com/JormungandrK/microservice-security/...
 
 COPY . /go/src/github.com/JormungandrK/identity-provider
 RUN go install github.com/JormungandrK/identity-provider

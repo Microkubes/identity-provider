@@ -106,8 +106,8 @@ var _ = Resource("public", func() {
 	Origin("*", func() {
 		Methods("GET", "POST")
 	})
-	Files("/css/*filepath", "public/css")
-	Files("/js/*filepath", "public/js")
+	Files("/saml/css/*filepath", "public/css")
+	Files("/saml/js/*filepath", "public/js")
 })
 
 // Swagger UI

@@ -73,9 +73,9 @@ info:
   title: The saml identity provider microservice
   version: "1.0"
 paths:
-  /css/{filepath}:
+  /saml/css/{filepath}:
     get:
-      operationId: public#/css/*filepath
+      operationId: public#/saml/css/*filepath
       parameters:
       - description: Relative file path
         in: path
@@ -94,27 +94,6 @@ paths:
       schemes:
       - http
       summary: Download public/css
-  /js/{filepath}:
-    get:
-      operationId: public#/js/*filepath
-      parameters:
-      - description: Relative file path
-        in: path
-        name: filepath
-        required: true
-        type: string
-      responses:
-        "200":
-          description: File downloaded
-          schema:
-            type: file
-        "404":
-          description: File not found
-          schema:
-            $ref: '#/definitions/error'
-      schemes:
-      - http
-      summary: Download public/js
   /saml/idp/login:
     get:
       description: Login user
@@ -173,7 +152,6 @@ paths:
           $ref: '#/definitions/DeleteSPPayload'
       produces:
       - application/vnd.goa.error
-      - application/vnd.goa.error
       - text/plain
       responses:
         "200":
@@ -196,7 +174,6 @@ paths:
       operationId: idp#getServiceProviders
       produces:
       - application/vnd.goa.error
-      - application/vnd.goa.error
       - text/plain
       responses:
         "200":
@@ -218,7 +195,6 @@ paths:
       description: Add new service provider
       operationId: idp#addServiceProvider
       produces:
-      - application/vnd.goa.error
       - application/vnd.goa.error
       responses:
         "201":
@@ -249,7 +225,6 @@ paths:
           $ref: '#/definitions/DeleteSessionPayload'
       produces:
       - application/vnd.goa.error
-      - application/vnd.goa.error
       - text/plain
       responses:
         "200":
@@ -271,7 +246,6 @@ paths:
       description: Get all sessions
       operationId: idp#getSessions
       produces:
-      - application/vnd.goa.error
       - application/vnd.goa.error
       - text/plain
       responses:
@@ -307,6 +281,27 @@ paths:
       summary: serveLogin idp
       tags:
       - idp
+  /saml/js/{filepath}:
+    get:
+      operationId: public#/saml/js/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: Download public/js
   /swagger-ui/{filepath}:
     get:
       operationId: swagger#/swagger-ui/*filepath

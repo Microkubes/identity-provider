@@ -7,29 +7,24 @@ import (
 	"flag"
 	"fmt"
 	"net/url"
-	"os"
 
+	"github.com/JormungandrK/identity-provider/config"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/logger"
 	"github.com/crewjam/saml/samlidp"
 )
 
 // New returns a new saml idp Server
-func New(key, cert string) (*samlidp.Server, error) {
+func New(cert string, key string, cfg *config.Config) (*samlidp.Server, error) {
 	logr := logger.DefaultLogger
 	flag.Parse()
 
-	gatewayURL := os.Getenv("API_GATEWAY_URL")
-	if gatewayURL == "" {
-		gatewayURL = "http://kong:8000"
-	}
-
-	baseURL, err := url.Parse(fmt.Sprintf("%s/saml/idp", gatewayURL))
+	baseURL, err := url.Parse(fmt.Sprintf("%s/saml/idp", cfg.GatewayURL))
 	if err != nil {
 		return nil, err
 	}
 
-	keyPair, err := tls.LoadX509KeyPair(key, cert)
+	keyPair, err := tls.LoadX509KeyPair(cert, key)
 	if err != nil {
 		return nil, err
 	}
