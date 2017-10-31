@@ -3,6 +3,7 @@ package service
 import (
 	"crypto"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
 	"flag"
 	"fmt"
@@ -16,6 +17,7 @@ import (
 
 	"gopkg.in/h2non/gock.v1"
 
+	"github.com/JormungandrK/identity-provider/config"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/logger"
 	"github.com/crewjam/saml/samlidp"
@@ -77,6 +79,35 @@ UzreO96WzlBBMtY=
 	return c
 }()
 
+var confBytes = []byte(`{
+	"microservice":	{
+		"name": "identity-provider-microservice",
+		"port": 8080,
+		"paths": ["/saml"],
+		"virtual_host": "identity-provider.services.jormungandr.org",
+		"weight": 10,
+		"slots": 100
+	},
+	"gatewayUrl": "http://kong:8000",
+    "gatewayAdminUrl": "http://kong:8001",
+    "systemKey": "/run/secrets/system",
+ 	"services": {
+		"microservice-user": "http://kong:8000/users"
+	},
+	"client": {
+		"redirect-from-login": "https://kong:8000/profiles/me"
+	},
+	"database":{
+		"host": "mongo:27017",
+		"database": "identity-provider",
+		"user": "restapi",
+		"pass": "restapi"
+	}
+}`)
+
+var cfg = &config.Config{}
+var _ = json.Unmarshal(confBytes, cfg)
+
 var sessionMaxAge = time.Hour * 24
 
 func createSAMLIdP() (*samlidp.Server, error) {
@@ -106,46 +137,6 @@ func createSAMLIdP() (*samlidp.Server, error) {
 	}
 
 	return s, nil
-}
-
-func TestFindUser(t *testing.T) {
-	s, err := createSAMLIdP()
-	if err != nil {
-		t.Fatal(err)
-	}
-	config := []byte(`{
-	    "services": {
-	    	"microservice-user": "http://127.0.0.1:8081/users"
-	    }
-	  }`)
-
-	err = ioutil.WriteFile("config.json", config, 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer os.Remove("config.json")
-
-	gock.New("http://127.0.0.1:8081").
-		Post("/users").
-		Reply(200).
-		JSON(map[string]interface{}{
-			"id":         "59804b3c0000000000000000",
-			"fullname":   "Jon Smith",
-			"username":   "jon",
-			"email":      "jon@test.com",
-			"externalId": "qwe04b3c000000qwertydgfsd",
-			"roles":      []string{"admin", "user"},
-			"active":     false,
-		})
-
-	user, err := FindUser("jon", "qwerty123", &s.IDP)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if user == nil {
-		t.Fatal("Nil user")
-	}
 }
 
 func TestFindUserBadConfig(t *testing.T) {
@@ -179,7 +170,7 @@ func TestFindUserBadConfig(t *testing.T) {
 			"active":     false,
 		})
 
-	_, err = FindUser("jon", "qwerty123", &s.IDP)
+	_, err = FindUser("jon", "qwerty123", &s.IDP, cfg)
 	if err == nil {
 		t.Fatal("Nil error, expected: Post http://127.0.0.1:8081/not-exists/find: gock: cannot match any request")
 	}
@@ -211,47 +202,10 @@ func TestFindUserBadStatusCode(t *testing.T) {
 			"details": "Internal Server Error",
 		})
 
-	_, err = FindUser("jon", "qwerty123", &s.IDP)
+	_, err = FindUser("jon", "qwerty123", &s.IDP, cfg)
 
 	if err == nil {
 		t.Fatal("Nil error, expected: Internal Server Error")
-	}
-}
-
-func TestPostData(t *testing.T) {
-	s, err := createSAMLIdP()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	config := []byte(`{
-	    "services": {
-	    	"microservice-user": "http://test.com/users"
-	    }
-	  }`)
-
-	err = ioutil.WriteFile("config.json", config, 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer os.Remove("config.json")
-
-	payload := []byte(`{
-	    "data": "something"
-	  }`)
-	client := &http.Client{}
-
-	gock.New("http://test.com").
-		Post("/users").
-		Reply(201)
-
-	resp, err := postData(client, payload, "http://test.com/users", &s.IDP)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if resp == nil {
-		t.Fatal("Nil response")
 	}
 }
 

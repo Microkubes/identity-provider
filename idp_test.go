@@ -43,6 +43,7 @@ var confBytes = []byte(`{
 	},
 	"gatewayUrl": "http://kong:8000",
     "gatewayAdminUrl": "http://kong:8001",
+    "systemKey": "/run/secrets/system",
  	"services": {
 		"microservice-user": "http://kong:8000/users"
 	},
