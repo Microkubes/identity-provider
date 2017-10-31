@@ -2,6 +2,8 @@ package service
 
 import (
 	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
@@ -90,7 +92,7 @@ var confBytes = []byte(`{
 	},
 	"gatewayUrl": "http://kong:8000",
     "gatewayAdminUrl": "http://kong:8001",
-    "systemKey": "/run/secrets/system",
+    "systemKey": "system",
  	"services": {
 		"microservice-user": "http://kong:8000/users"
 	},
@@ -137,6 +139,56 @@ func createSAMLIdP() (*samlidp.Server, error) {
 	}
 
 	return s, nil
+}
+
+func TestFindUser(t *testing.T) {
+	s, err := createSAMLIdP()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config := []byte(`{
+	    "services": {
+	    	"microservice-user": "http://127.0.0.1:8081/users"
+	    }
+	  }`)
+
+	err = ioutil.WriteFile("config.json", config, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.Remove("config.json")
+
+	privkey, _ := rsa.GenerateKey(rand.Reader, 4096)
+	bytes := x509.MarshalPKCS1PrivateKey(privkey)
+	privateBytes := pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: bytes,
+	})
+	ioutil.WriteFile("system", privateBytes, 0644)
+
+	defer os.Remove("system")
+
+	gock.New(cfg.Services["microservice-user"]).
+		Post("/find").
+		Reply(200).
+		JSON(map[string]interface{}{
+			"id":         "59804b3c0000000000000000",
+			"fullname":   "Jon Smith",
+			"username":   "jon",
+			"email":      "jon@test.com",
+			"externalId": "qwe04b3c000000qwertydgfsd",
+			"roles":      []string{"admin", "user"},
+			"active":     false,
+		})
+
+	user, err := FindUser("jon", "qwerty123", &s.IDP, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if user == nil {
+		t.Fatal("Nil user")
+	}
 }
 
 func TestFindUserBadConfig(t *testing.T) {
@@ -303,5 +355,52 @@ func TestGenerateSignedSAMLToken(t *testing.T) {
 	_, err = GenerateSignedSAMLToken(&s.IDP, user)
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestPostData(t *testing.T) {
+	s, err := createSAMLIdP()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	config := []byte(`{
+ 	    "services": {
+ 	    	"microservice-user": "http://test.com/users"
+ 	    }
+ 	  }`)
+
+	err = ioutil.WriteFile("config.json", config, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.Remove("config.json")
+
+	privkey, _ := rsa.GenerateKey(rand.Reader, 4096)
+	bytes := x509.MarshalPKCS1PrivateKey(privkey)
+	privateBytes := pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: bytes,
+	})
+	ioutil.WriteFile("system", privateBytes, 0644)
+
+	defer os.Remove("system")
+
+	payload := []byte(`{
+ 	    "data": "something"
+ 	  }`)
+	client := &http.Client{}
+
+	gock.New("http://test.com").
+		Post("/users").
+		Reply(201)
+
+	resp, err := postData(client, payload, "http://test.com/users", &s.IDP, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp == nil {
+		t.Fatal("Nil response")
 	}
 }
