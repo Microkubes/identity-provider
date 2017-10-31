@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/JormungandrK/identity-provider/app"
@@ -184,6 +185,9 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 	w := ctx.ResponseData
 	c.IDP.ServiceProviderProvider = c.Repository
 
+	relayState := strings.TrimSpace(r.FormValue("RelayState"))
+	SAMLRequest := strings.TrimSpace(r.FormValue("SAMLRequest"))
+
 	req, err := jormungandrSamlIdp.ValidateSamlRequest(c.IDP, r)
 	if err != nil {
 		jormungandrSamlIdp.BadRequestForm(w, r, err.Error(), badRequestFile)
@@ -192,13 +196,13 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 
 	username, password, err := service.CheckUserCredentials(r, w, req)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", req.IDP.SSOURL.String()), err.Error(), loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s?RelayState=%s&SAMLRequest=%s", req.IDP.SSOURL.String(), relayState, SAMLRequest), err.Error(), loginFile)
 		return nil
 	}
 
 	user, err := service.FindUser(username, password, c.IDP, c.Config)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), "Wrong username or password!", loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s?RelayState=%s&SAMLRequest=%s", req.IDP.SSOURL.String(), relayState, SAMLRequest), "Wrong username or password!", loginFile)
 		return nil
 	}
 
