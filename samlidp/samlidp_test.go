@@ -1,9 +1,12 @@
 package samlidp
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/JormungandrK/identity-provider/config"
 )
 
 var privateKey = `-----BEGIN PRIVATE KEY-----
@@ -54,6 +57,35 @@ kA5G3k/5ZU7ITt+lTQ1wb9P1oweBlsa+KPGCZWxvz2S+kCQFj0d/OAXk0GPyD4+X
 laltgoXqD0kLVp1vX5VZ8ojRzdkrrR1ILJzxKR02MDs8xLgkwZuCTY2P1tPUDWM=
 -----END CERTIFICATE-----`
 
+var confBytes = []byte(`{
+	"microservice":	{
+		"name": "identity-provider-microservice",
+		"port": 8080,
+		"paths": ["/saml"],
+		"virtual_host": "identity-provider.services.jormungandr.org",
+		"weight": 10,
+		"slots": 100
+	},
+	"gatewayUrl": "http://kong:8000",
+    "gatewayAdminUrl": "http://kong:8001",
+    "systemKey": "/run/secrets/system",
+ 	"services": {
+		"microservice-user": "http://kong:8000/users"
+	},
+	"client": {
+		"redirect-from-login": "https://kong:8000/profiles/me"
+	},
+	"database":{
+		"host": "mongo:27017",
+		"database": "identity-provider",
+		"user": "restapi",
+		"pass": "restapi"
+	}
+}`)
+
+var cfg = &config.Config{}
+var _ = json.Unmarshal(confBytes, cfg)
+
 func TestNew(t *testing.T) {
 	keyFile, err := ioutil.TempFile("", "tmp-key.key")
 	if err != nil {
@@ -73,7 +105,7 @@ func TestNew(t *testing.T) {
 	certFile.WriteString(certificate)
 	certFile.Sync()
 
-	_, err = New(keyFile.Name(), certFile.Name())
+	_, err = New(keyFile.Name(), certFile.Name(), cfg)
 	if err == nil {
 		t.Fatal("Nil error, expected: failed to find certificate PEM data in certificate input, but did find a private key; PEM inputs may have been switched")
 	}

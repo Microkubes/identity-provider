@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/JormungandrK/identity-provider/app"
@@ -31,6 +30,7 @@ type IdpController struct {
 	*goa.Controller
 	Repository db.Repository
 	IDP        *saml.IdentityProvider
+	Config     *config.Config
 }
 
 type SamlIdentityProvider struct {
@@ -38,11 +38,12 @@ type SamlIdentityProvider struct {
 }
 
 // NewIdpController creates a idp controller.
-func NewIdpController(service *goa.Service, repository db.Repository, idp *saml.IdentityProvider) *IdpController {
+func NewIdpController(service *goa.Service, repository db.Repository, idp *saml.IdentityProvider, config *config.Config) *IdpController {
 	return &IdpController{
 		Controller: service.NewController("IdpController"),
 		Repository: repository,
 		IDP:        idp,
+		Config:     config,
 	}
 }
 
@@ -71,18 +72,13 @@ func (c *IdpController) LoginUser(ctx *app.LoginUserIdpContext) error {
 	w := ctx.ResponseData
 	c.IDP.ServiceProviderProvider = c.Repository
 
-	gatewayURL := os.Getenv("API_GATEWAY_URL")
-	if gatewayURL == "" {
-		gatewayURL = "http://kong:8000"
-	}
-
 	req := &saml.IdpAuthnRequest{
 		IDP:         c.IDP,
 		HTTPRequest: r,
 		RelayState:  "relayState",
 	}
 
-	jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "", loginFile)
+	jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), "", loginFile)
 
 	return nil
 }
@@ -93,16 +89,6 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 	w := ctx.ResponseData
 	c.IDP.ServiceProviderProvider = c.Repository
 
-	gatewayURL := os.Getenv("API_GATEWAY_URL")
-	if gatewayURL == "" {
-		gatewayURL = "http://kong:8000"
-	}
-
-	config, err := config.LoadConfig("")
-	if err != nil {
-		panic(err)
-	}
-
 	req := &saml.IdpAuthnRequest{
 		IDP:         c.IDP,
 		HTTPRequest: r,
@@ -111,13 +97,13 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 
 	username, password, err := service.CheckUserCredentials(r, w, req)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), err.Error(), loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), err.Error(), loginFile)
 		return nil
 	}
 
-	user, err := service.FindUser(username, password, c.IDP)
+	user, err := service.FindUser(username, password, c.IDP, c.Config)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", gatewayURL), "Wrong username or password!", loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), "Wrong username or password!", loginFile)
 		return nil
 	}
 
@@ -156,7 +142,7 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 		Path:     "/",
 	})
 
-	http.Redirect(w, r, config.Client["redirect-from-login"], http.StatusFound)
+	http.Redirect(w, r, c.Config.Client["redirect-from-login"], http.StatusFound)
 
 	return nil
 }
@@ -210,7 +196,7 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 		return nil
 	}
 
-	user, err := service.FindUser(username, password, c.IDP)
+	user, err := service.FindUser(username, password, c.IDP, c.Config)
 	if err != nil {
 		jormungandrSamlIdp.LoginForm(w, r, req, req.IDP.SSOURL.String(), "Wrong username or password!", loginFile)
 		return nil

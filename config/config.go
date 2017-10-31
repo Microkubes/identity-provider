@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	commonconf "github.com/JormungandrK/microservice-tools/config"
 	"github.com/JormungandrK/microservice-tools/gateway"
 )
 
@@ -12,9 +13,24 @@ import (
 type Config struct {
 	// Microservice is a gateway.Microservice configuration for self-registration and service config.
 	Microservice gateway.MicroserviceConfig `json:"microservice"`
+
+	// Database holds the database configuration
+	Database *commonconf.DBConfig `json:"database"`
+
+	// GatewayURL is the URL of the gateway (proxy).
+	GatewayURL string `json:"gatewayUrl"`
+
+	// GatewayAdminURL is the administration URL of the API Gateway. Used for purposes of registration of a
+	// microservice with the API gateway.
+	GatewayAdminURL string `json:"gatewayAdminUrl"`
+
+	// SystemKey holds the path to the system key which is provate RSA key
+	SystemKey string `json:"systemKey"`
+
 	// Services is a map of <service-name>:<service base URL>. For example,
 	// "user-microservice": "http://kong.gateway:8001/user"
 	Services map[string]string `json:"services"`
+
 	// Client is a map of <client-name>:<url>
 	// "redirect-from-login": "http://client-root-url"
 	Client map[string]string `json:"client"`

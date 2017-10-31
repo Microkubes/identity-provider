@@ -454,17 +454,17 @@ func (cmd *DownloadCommand) Run(c *client.Client, args []string) error {
 		}
 		goto found
 	}
-	if strings.HasPrefix(rpath, "/css/") {
+	if strings.HasPrefix(rpath, "/saml/css/") {
 		fnd = c.DownloadCSS
-		rpath = rpath[5:]
+		rpath = rpath[10:]
 		if outfile == "" {
 			_, outfile = path.Split(rpath)
 		}
 		goto found
 	}
-	if strings.HasPrefix(rpath, "/js/") {
+	if strings.HasPrefix(rpath, "/saml/js/") {
 		fnd = c.DownloadJs
-		rpath = rpath[4:]
+		rpath = rpath[9:]
 		if outfile == "" {
 			_, outfile = path.Split(rpath)
 		}

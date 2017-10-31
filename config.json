@@ -7,10 +7,19 @@
 		"weight": 10,
 		"slots": 100
 	},
- 	"services": {
+	"gatewayUrl": "http://localhost:8000",
+	"gatewayAdminUrl": "http://kong:8001",
+	"systemKey": "/run/secrets/system",
+	"services": {
 		"microservice-user": "http://kong:8000/users"
 	},
 	"client": {
 		"redirect-from-login": "https://kong:8000/profiles/me"
+	},
+	"database":{
+		"host": "mongo:27017",
+		"database": "identity-provider",
+		"user": "restapi",
+		"pass": "restapi"
 	}
 }

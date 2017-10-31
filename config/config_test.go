@@ -16,6 +16,8 @@ func TestLoadConfig(t *testing.T) {
 			"weight": 10,
 			"slots": 100
 	    },
+	   	"gatewayUrl": "http://kong:8000",
+	    "gatewayAdminUrl": "http://kong:8001",
 	    "services": {
 	      	"microservice-user": "http://127.0.0.1:8081/users"
 	    },

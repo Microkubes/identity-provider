@@ -5,6 +5,7 @@ import (
 	"crypto"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
 	"encoding/xml"
 	"flag"
@@ -21,6 +22,7 @@ import (
 
 	"github.com/JormungandrK/identity-provider/app"
 	"github.com/JormungandrK/identity-provider/app/test"
+	"github.com/JormungandrK/identity-provider/config"
 	"github.com/JormungandrK/identity-provider/db"
 	jormungandrTest "github.com/JormungandrK/identity-provider/test"
 	"github.com/crewjam/saml"
@@ -30,11 +32,40 @@ import (
 	"github.com/goadesign/goa"
 )
 
+var confBytes = []byte(`{
+	"microservice":	{
+		"name": "identity-provider-microservice",
+		"port": 8080,
+		"paths": ["/saml"],
+		"virtual_host": "identity-provider.services.jormungandr.org",
+		"weight": 10,
+		"slots": 100
+	},
+	"gatewayUrl": "http://kong:8000",
+    "gatewayAdminUrl": "http://kong:8001",
+    "systemKey": "/run/secrets/system",
+ 	"services": {
+		"microservice-user": "http://kong:8000/users"
+	},
+	"client": {
+		"redirect-from-login": "https://kong:8000/profiles/me"
+	},
+	"database":{
+		"host": "mongo:27017",
+		"database": "identity-provider",
+		"user": "restapi",
+		"pass": "restapi"
+	}
+}`)
+
+var cfg = &config.Config{}
+var _ = json.Unmarshal(confBytes, cfg)
+
 var (
 	goaService = goa.New("identity-provider")
 	repository = db.New()
 	samlServer = createSAMLIdP()
-	ctrl       = NewIdpController(goaService, repository, &samlServer.IDP)
+	ctrl       = NewIdpController(goaService, repository, &samlServer.IDP, cfg)
 )
 
 var key = func() crypto.PrivateKey {
