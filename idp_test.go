@@ -354,7 +354,6 @@ func TestServeLogin(t *testing.T) {
 		JSON(map[string]interface{}{
 			"id":         "59804b3c0000000000000000",
 			"fullname":   "Jon Smith",
-			"username":   "jon",
 			"email":      "jon@test.com",
 			"externalId": "qwe04b3c000000qwertydgfsd",
 			"roles":      []string{"admin", "user"},
@@ -426,7 +425,6 @@ func TestServeLoginUser(t *testing.T) {
 		JSON(map[string]interface{}{
 			"id":         "59804b3c0000000000000000",
 			"fullname":   "Jon Smith",
-			"username":   "jon",
 			"email":      "jon@test.com",
 			"externalId": "qwe04b3c000000qwertydgfsd",
 			"roles":      []string{"admin", "user"},

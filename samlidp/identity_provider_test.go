@@ -151,7 +151,6 @@ func TestMakeAssertion(t *testing.T) {
 		CreateTime:    saml.TimeNow(),
 		ExpireTime:    saml.TimeNow().Add(sessionMaxAge),
 		Index:         "2f5eefac59e6fa6b24a078e4f8da1e48441ec3afc25222e00ac127a4ab1db1ed",
-		UserName:      "59ce17c60000000000000000",
 		Groups:        []string{"user"},
 		UserEmail:     "example@host.com",
 		UserGivenName: "john",

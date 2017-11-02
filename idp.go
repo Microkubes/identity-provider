@@ -96,15 +96,15 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 		RelayState:  "relayState",
 	}
 
-	username, password, err := service.CheckUserCredentials(r, w, req)
+	email, password, err := service.CheckUserCredentials(r, w, req)
 	if err != nil {
 		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), err.Error(), loginFile)
 		return nil
 	}
 
-	user, err := service.FindUser(username, password, c.IDP, c.Config)
+	user, err := service.FindUser(email, password, c.IDP, c.Config)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), "Wrong username or password!", loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), "Wrong email or password!", loginFile)
 		return nil
 	}
 
@@ -119,14 +119,13 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 	}
 
 	session := &saml.Session{
-		ID:            tokenStr,
-		CreateTime:    saml.TimeNow(),
-		ExpireTime:    saml.TimeNow().Add(sessionMaxAge),
-		Index:         hex.EncodeToString(jormungandrSamlIdp.RandomBytes(32)),
-		UserName:      user["id"].(string),
-		Groups:        roles,
-		UserEmail:     user["email"].(string),
-		UserGivenName: user["username"].(string),
+		ID:         tokenStr,
+		CreateTime: saml.TimeNow(),
+		ExpireTime: saml.TimeNow().Add(sessionMaxAge),
+		Index:      hex.EncodeToString(jormungandrSamlIdp.RandomBytes(32)),
+		UserName:   user["id"].(string),
+		Groups:     roles,
+		UserEmail:  user["email"].(string),
 	}
 
 	if err = c.Repository.AddSession(session); err != nil {
@@ -194,15 +193,15 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 		return nil
 	}
 
-	username, password, err := service.CheckUserCredentials(r, w, req)
+	email, password, err := service.CheckUserCredentials(r, w, req)
 	if err != nil {
 		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s?RelayState=%s&SAMLRequest=%s", req.IDP.SSOURL.String(), relayState, SAMLRequest), err.Error(), loginFile)
 		return nil
 	}
 
-	user, err := service.FindUser(username, password, c.IDP, c.Config)
+	user, err := service.FindUser(email, password, c.IDP, c.Config)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s?RelayState=%s&SAMLRequest=%s", req.IDP.SSOURL.String(), relayState, SAMLRequest), "Wrong username or password!", loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s?RelayState=%s&SAMLRequest=%s", req.IDP.SSOURL.String(), relayState, SAMLRequest), "Wrong email or password!", loginFile)
 		return nil
 	}
 
@@ -217,14 +216,13 @@ func (c *IdpController) ServeLogin(ctx *app.ServeLoginIdpContext) error {
 	}
 
 	session := &saml.Session{
-		ID:            tokenStr,
-		CreateTime:    saml.TimeNow(),
-		ExpireTime:    saml.TimeNow().Add(sessionMaxAge),
-		Index:         hex.EncodeToString(jormungandrSamlIdp.RandomBytes(32)),
-		UserName:      user["id"].(string),
-		Groups:        roles,
-		UserEmail:     user["email"].(string),
-		UserGivenName: user["username"].(string),
+		ID:         tokenStr,
+		CreateTime: saml.TimeNow(),
+		ExpireTime: saml.TimeNow().Add(sessionMaxAge),
+		Index:      hex.EncodeToString(jormungandrSamlIdp.RandomBytes(32)),
+		UserName:   user["id"].(string),
+		Groups:     roles,
+		UserEmail:  user["email"].(string),
 	}
 
 	if err = c.Repository.AddSession(session); err != nil {
