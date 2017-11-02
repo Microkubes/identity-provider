@@ -175,7 +175,6 @@ func TestFindUser(t *testing.T) {
 		JSON(map[string]interface{}{
 			"id":         "59804b3c0000000000000000",
 			"fullname":   "Jon Smith",
-			"username":   "jon",
 			"email":      "jon@test.com",
 			"externalId": "qwe04b3c000000qwertydgfsd",
 			"roles":      []string{"admin", "user"},
@@ -215,7 +214,6 @@ func TestFindUserBadConfig(t *testing.T) {
 		JSON(map[string]interface{}{
 			"id":         "59804b3c0000000000000000",
 			"fullname":   "Jon Smith",
-			"username":   "jon",
 			"email":      "jon@test.com",
 			"externalId": "qwe04b3c000000qwertydgfsd",
 			"roles":      []string{"admin", "user"},
@@ -262,19 +260,19 @@ func TestFindUserBadStatusCode(t *testing.T) {
 }
 
 func TestValidateCredentials(t *testing.T) {
-	err := validateCredentials("test", "test123")
+	err := validateCredentials("test@example.org", "test123")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	err = validateCredentials("a#$%", "zz")
 	if err == nil {
-		t.Fatal("Nil error for invalid username/password")
+		t.Fatal("Nil error for invalid email/password")
 	}
 }
 
 func TestCheckUserCredentials(t *testing.T) {
-	r, _ := http.NewRequest("POST", "https://idp.example.com/saml/sso?user=test&password=test123", nil)
+	r, _ := http.NewRequest("POST", "https://idp.example.com/saml/sso?email=test@example.org&password=test123", nil)
 	w := httptest.NewRecorder()
 	s, err := createSAMLIdP()
 	if err != nil {
@@ -287,15 +285,15 @@ func TestCheckUserCredentials(t *testing.T) {
 		RelayState:  "relayState",
 	}
 
-	username, password, err := CheckUserCredentials(r, w, req)
+	email, password, err := CheckUserCredentials(r, w, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if username != "test" {
-		t.Fatalf("Expected user name was %s, got %s", "test", username)
+	if email != "test@example.org" {
+		t.Fatalf("Expected user name was %s, got %s", "test", email)
 	}
 	if password != "test123" {
-		t.Fatalf("Expected user name was %s, got %s", "test123", password)
+		t.Fatalf("Expected password was %s, got %s", "test123", password)
 	}
 }
 
@@ -346,10 +344,9 @@ func TestGenerateSignedSAMLToken(t *testing.T) {
 	}
 
 	user := map[string]interface{}{
-		"id":       "test-id",
-		"username": "test",
-		"email":    "test@host.com",
-		"roles":    []interface{}{"user"},
+		"id":    "test-id",
+		"email": "test@host.com",
+		"roles": []interface{}{"user"},
 	}
 
 	_, err = GenerateSignedSAMLToken(&s.IDP, user)

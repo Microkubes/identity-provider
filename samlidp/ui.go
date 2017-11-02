@@ -9,7 +9,7 @@ import (
 	"github.com/crewjam/saml"
 )
 
-// LoginForm produces a form which requests a username and password and directs the user
+// LoginForm produces a form which requests a email and password and directs the user
 // back to the IDP authorize URL to restart the SAML login flow, this time establishing a
 // session based on the credentials that were provided.
 func LoginForm(w http.ResponseWriter, r *http.Request, req *saml.IdpAuthnRequest, url string, message string, file string) {

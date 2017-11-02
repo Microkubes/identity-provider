@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
+	"net/mail"
 	"strings"
 	"time"
 
@@ -22,10 +22,10 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// FindUser retrives the user by username and password
-func FindUser(username string, password string, idp *saml.IdentityProvider, cfg *config.Config) (map[string]interface{}, error) {
+// FindUser retrives the user by email and password
+func FindUser(email string, password string, idp *saml.IdentityProvider, cfg *config.Config) (map[string]interface{}, error) {
 	userPayload := map[string]interface{}{
-		"username": username,
+		"email":    email,
 		"password": password,
 	}
 	payload, err := json.Marshal(userPayload)
@@ -115,24 +115,24 @@ func postData(client *http.Client, payload []byte, url string, idp *saml.Identit
 
 // checks user credentials
 func CheckUserCredentials(r *http.Request, w http.ResponseWriter, req *saml.IdpAuthnRequest) (string, string, error) {
-	username := strings.TrimSpace(r.FormValue("user"))
+	email := strings.TrimSpace(r.FormValue("email"))
 	password := strings.TrimSpace(r.FormValue("password"))
 
-	if username == "" || password == "" {
+	if email == "" || password == "" {
 		return "", "", fmt.Errorf("Credentials required!")
 	}
 
-	if err := validateCredentials(username, password); err != nil {
+	if err := validateCredentials(email, password); err != nil {
 		return "", "", err
 	}
 
-	return username, password, nil
+	return email, password, nil
 }
 
-// ValidateCredentials validates the user credential( username/password )
-func validateCredentials(username, pass string) error {
-	if match, _ := regexp.MatchString("^([a-zA-Z0-9@]{4,50})$", username); !match {
-		return fmt.Errorf("You have entered invalid user")
+// ValidateCredentials validates the user credential( email/password )
+func validateCredentials(email, pass string) error {
+	if _, err := mail.ParseAddress(email); err != nil {
+		return fmt.Errorf("You have entered invalid email")
 	}
 	if len(pass) < 6 {
 		return fmt.Errorf("You have entered invalid password")
@@ -149,10 +149,9 @@ func GenerateSignedSAMLToken(idp *saml.IdentityProvider, user map[string]interfa
 
 	encodedPrivatekKey := x509.MarshalPKCS1PrivateKey(idp.Key.(*rsa.PrivateKey))
 	claims := jwt.MapClaims{
-		"username": user["username"].(string),
-		"userId":   user["id"].(string),
-		"roles":    roles,
-		"email":    user["email"].(string),
+		"userId": user["id"].(string),
+		"email":  user["email"].(string),
+		"roles":  roles,
 	}
 	tokenHS := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenStr, err := tokenHS.SignedString(encodedPrivatekKey)
