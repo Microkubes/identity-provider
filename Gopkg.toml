@@ -30,8 +30,8 @@
   name = "github.com/afex/hystrix-go"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/crewjam/saml"
-  version = "0.2.0"
 
 [[constraint]]
   name = "github.com/dgrijalva/jwt-go"
