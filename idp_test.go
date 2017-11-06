@@ -126,7 +126,7 @@ UzreO96WzlBBMtY=
 
 var rootURL, _ = url.Parse("http://localhost:8081")
 var rootURLInternalError, _ = url.Parse("http://internal-error")
-var idpMetadataURL, _ = url.Parse("https://www.testshib.org/metadata/testshib-providers.xml")
+var idpMetadataURL, _ = url.Parse("https://app.onelogin.com/saml/metadata/701453.xml")
 var samlSP, _ = samlsp.New(samlsp.Options{
 	IDPMetadataURL: idpMetadataURL,
 	URL:            *rootURL,

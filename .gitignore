@@ -24,3 +24,6 @@ saml-keys
 # Metadata
 google-metadata.xml
 sp-metadata.xml
+
+# Go Dependency Management
+vendor
