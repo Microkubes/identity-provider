@@ -64,6 +64,14 @@ func FindUser(email string, password string, idp *saml.IdentityProvider, cfg *co
 		return nil, err
 	}
 
+	if active, ok := resp["active"]; ok {
+		if active != nil {
+			if _, ok := active.(bool); ok && !active.(bool) {
+				return nil, fmt.Errorf("account-not-activated")
+			}
+		}
+	}
+
 	return resp, nil
 }
 

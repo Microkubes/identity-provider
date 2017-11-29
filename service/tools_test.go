@@ -178,7 +178,7 @@ func TestFindUser(t *testing.T) {
 			"email":      "jon@test.com",
 			"externalId": "qwe04b3c000000qwertydgfsd",
 			"roles":      []string{"admin", "user"},
-			"active":     false,
+			"active":     true,
 		})
 
 	user, err := FindUser("jon", "qwerty123", &s.IDP, cfg)
