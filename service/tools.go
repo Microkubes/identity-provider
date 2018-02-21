@@ -88,10 +88,14 @@ func postData(client *http.Client, payload []byte, url string, idp *saml.Identit
 		return nil, err
 	}
 
+	randUUID, err := uuid.NewV4()
+	if err != nil {
+		return nil, err
+	}
 	claims := jwt.MapClaims{
 		"iss":      "identity-provider",
 		"exp":      time.Now().Add(time.Duration(30) * time.Second).Unix(),
-		"jti":      uuid.NewV4().String(),
+		"jti":      randUUID.String(),
 		"nbf":      0,
 		"sub":      "identity-provider",
 		"scope":    "api:read",
