@@ -6,7 +6,7 @@ RUN go install github.com/JormungandrK/identity-provider
 
 
 ### Main
-FROM alpine:3.6
+FROM alpine:3.7
 
 COPY --from=build /go/bin/identity-provider /usr/local/bin/identity-provider
 COPY public /public
