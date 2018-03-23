@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	commonconf "github.com/JormungandrK/microservice-tools/config"
-	"github.com/JormungandrK/microservice-tools/gateway"
+	commonconf "github.com/Microkubes/microservice-tools/config"
+	"github.com/Microkubes/microservice-tools/gateway"
 )
 
 // Config holds the microservice full configuration.

@@ -4,8 +4,8 @@
 //
 // Command:
 // $ goagen
-// --design=github.com/JormungandrK/identity-provider/design
-// --out=$(GOPATH)/src/github.com/JormungandrK/identity-provider
+// --design=github.com/Microkubes/identity-provider/design
+// --out=$(GOPATH)/src/github.com/Microkubes/identity-provider
 // --version=v1.2.0-dirty
 
 package test
@@ -14,7 +14,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/JormungandrK/identity-provider/app"
+	"github.com/Microkubes/identity-provider/app"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/goatest"
 	"io"

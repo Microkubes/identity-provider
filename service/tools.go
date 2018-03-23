@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JormungandrK/identity-provider/config"
-	// jormungandrSaml "github.com/JormungandrK/microservice-security/saml"
+	"github.com/Microkubes/identity-provider/config"
+	// jormungandrSaml "github.com/Microkubes/microservice-security/saml"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/crewjam/saml"
 	jwt "github.com/dgrijalva/jwt-go"

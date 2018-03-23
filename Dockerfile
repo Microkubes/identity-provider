@@ -1,8 +1,8 @@
 ### Multi-stage build
 FROM jormungandrk/goa-build as build
 
-COPY . /go/src/github.com/JormungandrK/identity-provider
-RUN go install github.com/JormungandrK/identity-provider
+COPY . /go/src/github.com/Microkubes/identity-provider
+RUN go install github.com/Microkubes/identity-provider
 
 
 ### Main

@@ -4,8 +4,8 @@
 //
 // Command:
 // $ goagen
-// --design=github.com/JormungandrK/identity-provider/design
-// --out=$(GOPATH)/src/github.com/JormungandrK/identity-provider
+// --design=github.com/Microkubes/identity-provider/design
+// --out=$(GOPATH)/src/github.com/Microkubes/identity-provider
 // --version=v1.2.0-dirty
 
 package client

@@ -11,7 +11,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 
-	"github.com/JormungandrK/identity-provider/app"
+	"github.com/Microkubes/identity-provider/app"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/goatest"
 )

@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/JormungandrK/identity-provider/db"
+	"github.com/Microkubes/identity-provider/db"
 )
 
 func TestLoadTemplateFile(t *testing.T) {

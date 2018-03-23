@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/JormungandrK/identity-provider/config"
+	"github.com/Microkubes/identity-provider/config"
 )
 
 var privateKey = `-----BEGIN PRIVATE KEY-----

@@ -1,4 +1,4 @@
-//go:generate goagen bootstrap -d github.com/JormungandrK/identity-provider/design
+//go:generate goagen bootstrap -d github.com/Microkubes/identity-provider/design
 
 package main
 
@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/JormungandrK/identity-provider/app"
-	"github.com/JormungandrK/identity-provider/config"
-	"github.com/JormungandrK/identity-provider/db"
-	jormungandrSamlIdp "github.com/JormungandrK/identity-provider/samlidp"
-	"github.com/JormungandrK/microservice-tools/gateway"
+	"github.com/Microkubes/identity-provider/app"
+	"github.com/Microkubes/identity-provider/config"
+	"github.com/Microkubes/identity-provider/db"
+	jormungandrSamlIdp "github.com/Microkubes/identity-provider/samlidp"
+	"github.com/Microkubes/microservice-tools/gateway"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 )

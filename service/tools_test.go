@@ -19,7 +19,7 @@ import (
 
 	"gopkg.in/h2non/gock.v1"
 
-	"github.com/JormungandrK/identity-provider/config"
+	"github.com/Microkubes/identity-provider/config"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/logger"
 	"github.com/crewjam/saml/samlidp"

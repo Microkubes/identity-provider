@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/JormungandrK/identity-provider/db"
+	"github.com/Microkubes/identity-provider/db"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/logger"
 	"github.com/crewjam/saml/samlidp"

@@ -20,11 +20,11 @@ import (
 
 	"gopkg.in/h2non/gock.v1"
 
-	"github.com/JormungandrK/identity-provider/app"
-	"github.com/JormungandrK/identity-provider/app/test"
-	"github.com/JormungandrK/identity-provider/config"
-	"github.com/JormungandrK/identity-provider/db"
-	jormungandrTest "github.com/JormungandrK/identity-provider/test"
+	"github.com/Microkubes/identity-provider/app"
+	"github.com/Microkubes/identity-provider/app/test"
+	"github.com/Microkubes/identity-provider/config"
+	"github.com/Microkubes/identity-provider/db"
+	jormungandrTest "github.com/Microkubes/identity-provider/test"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/logger"
 	"github.com/crewjam/saml/samlidp"

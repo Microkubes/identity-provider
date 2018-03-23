@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/JormungandrK/identity-provider/client"
-	"github.com/JormungandrK/identity-provider/tool/cli"
+	"github.com/Microkubes/identity-provider/client"
+	"github.com/Microkubes/identity-provider/tool/cli"
 	goaclient "github.com/goadesign/goa/client"
 	"github.com/spf13/cobra"
 	"net/http"
