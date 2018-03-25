@@ -18,6 +18,7 @@ FROM scratch
 
 ENV API_GATEWAY_URL="http://localhost:8001"
 
+COPY --from=build /go/src/github.com/Microkubes/identity-provider/config.json /config.json
 COPY --from=build /go/bin/identity-provider /identity-provider
 COPY public /public
 
