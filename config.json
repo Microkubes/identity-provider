@@ -3,11 +3,11 @@
 		"name": "identity-provider-microservice",
 		"port": 8080,
 		"paths": ["/saml"],
-		"virtual_host": "identity-provider.services.jormungandr.org",
+		"virtual_host": "identity-provider.service.consul",
 		"weight": 10,
 		"slots": 100
 	},
-	"gatewayUrl": "http://localhost:8000",
+	"gatewayUrl": "http://kong:8000",
 	"gatewayAdminUrl": "http://kong:8001",
 	"systemKey": "/run/secrets/system",
 	"services": {
@@ -17,9 +17,15 @@
 		"redirect-from-login": "https://kong:8000/profiles/me"
 	},
 	"database":{
-		"host": "mongo:27017",
-		"database": "identity-provider",
-		"user": "restapi",
-		"pass": "restapi"
-	}
+	    "dbName": "mongodb",
+	    "dbInfo": {
+			"credentials": "/full/path/to/aws/credentials",
+			"endpoint": "http://localhost:9000",
+			"awsRegion": "us-east-1",
+			"host": "mongo:27017",
+			"database": "identity-provider",
+			"user": "restapi",
+			"pass": "restapi"
+	    }
+    }
 }
