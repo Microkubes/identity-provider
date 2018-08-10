@@ -13,6 +13,8 @@ import (
 	"github.com/Microkubes/microservice-tools/gateway"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
+	toolscfg "github.com/Microkubes/microservice-tools/config"
+	"github.com/JormungandrK/backends"
 )
 
 func main() {
@@ -43,19 +45,19 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	dbConf := cfg.Database
-	// Create new session to MongoDB
-	session := db.NewSession(dbConf.Host, dbConf.Username, dbConf.Password, dbConf.DatabaseName)
-	// At the end close session
-	defer session.Close()
+	// dbConf := cfg.Database
+	// // Create new session to MongoDB
+	// session := db.NewSession(dbConf.Host, dbConf.Username, dbConf.Password, dbConf.DatabaseName)
+	// // At the end close session
+	// defer session.Close()
 
 	// Create metadata collection and indexes
-	indexServices := []string{"name"}
-	metadataCollection := db.PrepareDB(session, dbConf.DatabaseName, "services", indexServices)
+	// indexServices := []string{"name"}
+	// metadataCollection := db.PrepareDB(session, dbConf.DatabaseName, "services", indexServices)
 
 	// Create type collection and indexes
-	indexSessions := []string{"id"}
-	typeCollection := db.PrepareDB(session, dbConf.DatabaseName, "sessions", indexSessions)
+	// indexSessions := []string{"id"}
+	// typeCollection := db.PrepareDB(session, dbConf.DatabaseName, "sessions", indexSessions)
 
 	idpServer, err := jormungandrSamlIdp.New("/run/secrets/service.cert", "/run/secrets/service.key", cfg)
 	if err != nil {
@@ -64,10 +66,10 @@ func main() {
 	}
 
 	// Mount "idp" controller
-	c1 := NewIdpController(service, &db.MongoCollections{
-		Services: metadataCollection,
-		Sessions: typeCollection,
-	}, &idpServer.IDP, cfg)
+	// c1 := NewIdpController(service, &db.MongoCollections{
+	// 	Services: metadataCollection,
+	// 	Sessions: typeCollection,
+	// }, &idpServer.IDP, cfg)
 	app.MountIdpController(service, c1)
 	// Mount "swagger" controller
 	c2 := NewSwaggerController(service)

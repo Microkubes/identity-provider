@@ -18,6 +18,7 @@ import (
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
 	"github.com/goadesign/goa"
+	errors "github.com/JormungandrK/backends"
 )
 
 var sessionMaxAge = time.Hour * 24
@@ -295,19 +296,14 @@ func (c *IdpController) DeleteServiceProvider(ctx *app.DeleteServiceProviderIdpC
 func (c *IdpController) GetServiceProviders(ctx *app.GetServiceProvidersIdpContext) error {
 	services, err := c.Repository.GetServiceProviders()
 	if err != nil {
-		e := err.(*goa.ErrorResponse)
-
-		switch e.Status {
-		case 404:
+		if errors.IsErrNotFound(err) {
 			return ctx.NotFound(err)
-		default:
-			return ctx.InternalServerError(err)
 		}
 	}
 
 	resp, err := json.Marshal(services)
 	if err != nil {
-		return ctx.InternalServerError(goa.ErrInternal(err))
+		return ctx.InternalServerError(err)
 	}
 
 	return ctx.OK(resp)
@@ -317,14 +313,9 @@ func (c *IdpController) GetServiceProviders(ctx *app.GetServiceProvidersIdpConte
 func (c *IdpController) DeleteSession(ctx *app.DeleteSessionIdpContext) error {
 	err := c.Repository.DeleteSession(ctx.Payload.SessionID)
 	if err != nil {
-		e := err.(*goa.ErrorResponse)
-
-		switch e.Status {
-		case 404:
+		if errors.IsErrNotFound(err) {
 			return ctx.NotFound(err)
-		default:
-			return ctx.InternalServerError(err)
-		}
+			}
 	}
 
 	return ctx.OK([]byte("OK"))
@@ -334,19 +325,14 @@ func (c *IdpController) DeleteSession(ctx *app.DeleteSessionIdpContext) error {
 func (c *IdpController) GetSessions(ctx *app.GetSessionsIdpContext) error {
 	sessions, err := c.Repository.GetSessions()
 	if err != nil {
-		e := err.(*goa.ErrorResponse)
-
-		switch e.Status {
-		case 404:
+		if errors.IsErrNotFound(err) {
 			return ctx.NotFound(err)
-		default:
-			return ctx.InternalServerError(err)
-		}
+			}
 	}
 
 	resp, err := json.Marshal(sessions)
 	if err != nil {
-		return ctx.InternalServerError(goa.ErrInternal(err))
+		return ctx.InternalServerError(err)
 	}
 
 	return ctx.OK(resp)

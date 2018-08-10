@@ -2,12 +2,13 @@ package db
 
 import (
 	"net/http"
-	"time"
+	// "time"
 
-	"gopkg.in/mgo.v2"
+	// "gopkg.in/mgo.v2"
 
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
+	backends "github.com/JormungandrK/backends"
 )
 
 type Repository interface {
@@ -85,3 +86,13 @@ type Repository interface {
 
 // 	return collection
 // }
+
+type BackendIdentityProvider struct {
+	identityRepository backends.Repository
+}
+
+func NewIdentityProvider(identityRepository backends.Repository) Repository {
+	return &BackendIdentityProvider {
+		identityRepository: identityRepository,
+	}
+}
