@@ -22,7 +22,7 @@
 			"credentials": "/full/path/to/aws/credentials",
 			"endpoint": "http://localhost:9000",
 			"awsRegion": "us-east-1",
-			"host": "mongo:27017",
+			"host": "localhost:27017",
 			"database": "identity-provider",
 			"user": "restapi",
 			"pass": "restapi"

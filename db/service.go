@@ -9,7 +9,8 @@ import (
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
 	// "github.com/goadesign/goa"
-	// backends "github.com/JormungandrK/backends"
+	backends "github.com/JormungandrK/backends"
+	"fmt"
 )
 
 
@@ -34,16 +35,17 @@ func (m *BackendIdentityProvider) GetServiceProvider(r *http.Request, servicePro
 
 // AddServiceProvider register new service provider
 func (m *BackendIdentityProvider) AddServiceProvider(service *samlidp.Service) error {
-	// _, err := m.Services.Upsert(
-	// 	bson.M{"name": service.Name},
-	// 	bson.M{"$set": service})
+	addService := samlidp.Service {
+		Name: service.Name,
+		Set: service,
+	}
 
-	// if err != nil {
-	// 	return goa.ErrInternal(err)
-	// }
+	result, err := m.identityRepository.Save(addService, nil)
 
-	// return nil
-	return nil, nil
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // DeleteServiceProvider deletes the service by serviceID which is EntityID
@@ -67,5 +69,16 @@ func (m *BackendIdentityProvider) GetServiceProviders() (*[]samlidp.Service, err
 	// }
 
 	// return &services, nil
-	return nil, nil
+	var services []samlidp.Service 
+	if err := m.identityRepository.GetAll(&services); err != nil {
+		return nil, err
+	}
+
+	if len(services) == 0 {
+		return nil, err
+
+		fmt.Println("no services found")
+	}
+
+	return &services, nil
 }

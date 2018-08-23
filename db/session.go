@@ -12,7 +12,7 @@ import (
 
 // GetSession returns the *Session for this request.
 // If a session cookie already exists and represents a valid session, then the session is returned
-func (m *MongoCollections) GetSession(w http.ResponseWriter, r *http.Request, req *saml.IdpAuthnRequest) (*saml.Session, error) {
+func (m *BackendIdentityProvider) GetSession(w http.ResponseWriter, r *http.Request, req *saml.IdpAuthnRequest) (*saml.Session, error) {
 	if sessionCookie, err := r.Cookie("session"); err == nil {
 		session := &saml.Session{}
 		id := sessionCookie.Value
@@ -36,7 +36,7 @@ func (m *MongoCollections) GetSession(w http.ResponseWriter, r *http.Request, re
 }
 
 // AddSession adds new session in DB
-func (m *MongoCollections) AddSession(session *saml.Session) error {
+func (m *BackendIdentityProvider) AddSession(session *saml.Session) error {
 	_, err := m.Sessions.Upsert(
 		bson.M{"id": session.ID},
 		bson.M{"$set": session})
@@ -49,7 +49,7 @@ func (m *MongoCollections) AddSession(session *saml.Session) error {
 }
 
 // DeleteSession deletes session by sessionID which is cookie value
-func (m *MongoCollections) DeleteSession(sessionID string) error {
+func (m *BackendIdentityProvider) DeleteSession(sessionID string) error {
 	fmt.Println("Session: ", sessionID)
 	selector := bson.M{"id": bson.M{"$eq": sessionID}}
 	err := m.Sessions.Remove(selector)
@@ -65,7 +65,7 @@ func (m *MongoCollections) DeleteSession(sessionID string) error {
 }
 
 // GetSessions returns all sessions
-func (m *MongoCollections) GetSessions() (*[]saml.Session, error) {
+func (m *BackendIdentityProvider) GetSessions() (*[]saml.Session, error) {
 	var sessions []saml.Session
 	if err := m.Sessions.Find(nil).All(&sessions); err != nil {
 		return nil, goa.ErrInternal(err)
