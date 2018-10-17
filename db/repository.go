@@ -2,14 +2,15 @@ package db
 
 import (
 	"net/http"
-	"time"
-
-	"gopkg.in/mgo.v2"
 
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
+
+	"github.com/JormungandrK/backends"
+	"github.com/Microkubes/microservice-tools/config"
 )
 
+// Repository defines interface for accessing DB
 type Repository interface {
 	// AddSession adds new session in DB
 	AddSession(session *saml.Session) error
@@ -30,58 +31,68 @@ type Repository interface {
 	GetServiceProviders() (*[]samlidp.Service, error)
 }
 
-// MongoCollection wraps a mgo.Collection to embed methods in models.
-type MongoCollections struct {
-	Services *mgo.Collection
-	Sessions *mgo.Collection
+// IDPStore represents the IDP store containing the Services and Sessions repositories
+type IDPStore struct {
+	Services backends.Repository
+	Sessions backends.Repository
 }
 
-// NewSession returns a new Mongo Session.
-func NewSession(Host string, Username string, Password string, Database string) *mgo.Session {
-	session, err := mgo.DialWithInfo(&mgo.DialInfo{
-		Addrs:    []string{Host},
-		Username: Username,
-		Password: Password,
-		Database: Database,
-		Timeout:  30 * time.Second,
+// NewIDPStore creates IDP's repositories
+func NewIDPStore(cfg *config.DBConfig) (store Repository, cleanup func(), err error) {
+	manager := backends.NewBackendSupport(map[string]*config.DBInfo{
+		"mongodb":  &cfg.DBInfo,
+		"dynamodb": &cfg.DBInfo,
+	})
+
+	noop := func() {}
+	backend, err := manager.GetBackend(cfg.DBName)
+	if err != nil {
+		return nil, noop, err
+	}
+
+	cleanup = func() {
+		backend.Shutdown()
+	}
+
+	services, err := backend.DefineRepository("services", backends.RepositoryDefinitionMap{
+		"name": "services",
+		"indexes": []backends.Index{
+			backends.NewUniqueIndex("id"),
+			backends.NewUniqueIndex("name"),
+		},
+		"hashKey":       "id",
+		"rangeKey":      "name",
+		"readCapacity":  5, // FIXME: read these from config
+		"writeCapacity": 5, // FIXME: read these from config
+		"GSI": map[string]interface{}{
+			"name": map[string]interface{}{
+				"readCapacity":  1,
+				"writeCapacity": 1,
+			},
+		},
 	})
 	if err != nil {
-		panic(err)
+		return nil, noop, err
 	}
 
-	// SetMode - consistency mode for the session.
-	session.SetMode(mgo.Monotonic, true)
+	sessions, err := backend.DefineRepository("sessions", backends.RepositoryDefinitionMap{
+		"name": "sessions",
+		"indexes": []backends.Index{
+			backends.NewUniqueIndex("id"),
+		},
+		"hashKey":       "id",
+		"readCapacity":  5, // FIXME: read these from config
+		"writeCapacity": 5, // FIXME: read these from config
+		"GSI": map[string]interface{}{
+			"name": map[string]interface{}{
+				"readCapacity":  1,
+				"writeCapacity": 1,
+			},
+		},
+	})
 
-	return session
-}
-
-// PrepareDB ensure presence of persistent and immutable data in the DB.
-func PrepareDB(session *mgo.Session, db string, dbCollection string, indexes []string) *mgo.Collection {
-	// Create collection
-	collection := session.DB(db).C(dbCollection)
-
-	// Define indexes
-	for _, elem := range indexes {
-		i := []string{elem}
-		index := mgo.Index{}
-		if dbCollection == "sessions" {
-			index.Key = i
-			index.Unique = true
-			index.Background = true
-			index.Sparse = true
-			index.ExpireAfter = time.Duration(86400) * time.Second
-		} else {
-			index.Key = i
-			index.Unique = true
-			index.Background = true
-			index.Sparse = true
-		}
-
-		// Create indexes
-		if err := collection.EnsureIndex(index); err != nil {
-			panic(err)
-		}
-	}
-
-	return collection
+	return &IDPStore{
+		Services: services,
+		Sessions: sessions,
+	}, cleanup, err
 }

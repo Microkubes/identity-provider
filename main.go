@@ -43,19 +43,13 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	dbConf := cfg.Database
-	// Create new session to MongoDB
-	session := db.NewSession(dbConf.Host, dbConf.Username, dbConf.Password, dbConf.DatabaseName)
-	// At the end close session
-	defer session.Close()
-
-	// Create metadata collection and indexes
-	indexServices := []string{"name"}
-	metadataCollection := db.PrepareDB(session, dbConf.DatabaseName, "services", indexServices)
-
-	// Create type collection and indexes
-	indexSessions := []string{"id"}
-	typeCollection := db.PrepareDB(session, dbConf.DatabaseName, "sessions", indexSessions)
+	// Cretae IDP store
+	store, cleanup, err := db.NewIDPStore(cfg.Database)
+	if err != nil {
+		service.LogError("Creation of IDP store failed", "err", err)
+		return
+	}
+	defer cleanup()
 
 	idpServer, err := jormungandrSamlIdp.New("/run/secrets/service.cert", "/run/secrets/service.key", cfg)
 	if err != nil {
@@ -64,10 +58,7 @@ func main() {
 	}
 
 	// Mount "idp" controller
-	c1 := NewIdpController(service, &db.MongoCollections{
-		Services: metadataCollection,
-		Sessions: typeCollection,
-	}, &idpServer.IDP, cfg)
+	c1 := NewIdpController(service, store, &idpServer.IDP, cfg)
 	app.MountIdpController(service, c1)
 	// Mount "swagger" controller
 	c2 := NewSwaggerController(service)

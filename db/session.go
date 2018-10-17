@@ -1,10 +1,9 @@
 package db
 
 import (
-	"fmt"
 	"net/http"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/JormungandrK/backends"
 
 	"github.com/crewjam/saml"
 	"github.com/goadesign/goa"
@@ -12,16 +11,17 @@ import (
 
 // GetSession returns the *Session for this request.
 // If a session cookie already exists and represents a valid session, then the session is returned
-func (m *MongoCollections) GetSession(w http.ResponseWriter, r *http.Request, req *saml.IdpAuthnRequest) (*saml.Session, error) {
+func (s *IDPStore) GetSession(w http.ResponseWriter, r *http.Request, req *saml.IdpAuthnRequest) (*saml.Session, error) {
 	if sessionCookie, err := r.Cookie("session"); err == nil {
 		session := &saml.Session{}
 		id := sessionCookie.Value
-		query := bson.M{"id": bson.M{"$eq": id}}
 
-		if err := m.Sessions.Find(query).One(session); err != nil {
-			if err.Error() == "not found" {
+		_, err := s.Sessions.GetOne(backends.NewFilter().Match("id", id), session)
+		if err != nil {
+			if backends.IsErrNotFound(err) {
 				return nil, goa.ErrNotFound("session not found in database")
 			}
+
 			return nil, goa.ErrInternal(err)
 		}
 
@@ -36,12 +36,8 @@ func (m *MongoCollections) GetSession(w http.ResponseWriter, r *http.Request, re
 }
 
 // AddSession adds new session in DB
-func (m *MongoCollections) AddSession(session *saml.Session) error {
-	_, err := m.Sessions.Upsert(
-		bson.M{"id": session.ID},
-		bson.M{"$set": session})
-
-	if err != nil {
+func (s *IDPStore) AddSession(session *saml.Session) error {
+	if _, err := s.Sessions.Save(session, nil); err != nil {
 		return err
 	}
 
@@ -49,25 +45,30 @@ func (m *MongoCollections) AddSession(session *saml.Session) error {
 }
 
 // DeleteSession deletes session by sessionID which is cookie value
-func (m *MongoCollections) DeleteSession(sessionID string) error {
-	fmt.Println("Session: ", sessionID)
-	selector := bson.M{"id": bson.M{"$eq": sessionID}}
-	err := m.Sessions.Remove(selector)
+func (s *IDPStore) DeleteSession(sessionID string) error {
+	err := s.Sessions.DeleteOne(backends.NewFilter().Match("id", sessionID))
 	if err != nil {
-		if err.Error() == "not found" {
+		if backends.IsErrNotFound(err) {
 			return goa.ErrNotFound("session not found")
-		} else {
-			return goa.ErrInternal(err)
 		}
+
+		return goa.ErrInternal(err)
 	}
 
 	return nil
 }
 
 // GetSessions returns all sessions
-func (m *MongoCollections) GetSessions() (*[]saml.Session, error) {
+func (s *IDPStore) GetSessions() (*[]saml.Session, error) {
 	var sessions []saml.Session
-	if err := m.Sessions.Find(nil).All(&sessions); err != nil {
+	var typeHint map[string]interface{}
+
+	items, err := s.Sessions.GetAll(nil, typeHint, "", "", 0, 0)
+	if err != nil {
+		return nil, goa.ErrInternal(err)
+	}
+
+	if err := backends.MapToInterface(items, &sessions); err != nil {
 		return nil, goa.ErrInternal(err)
 	}
 
