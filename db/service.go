@@ -28,9 +28,21 @@ func (s *IDPStore) GetServiceProvider(r *http.Request, serviceProviderID string)
 	return &service.Metadata, err
 }
 
-// AddServiceProvider register new service provider
+// AddServiceProvider register new service provider, update if already exists.
 func (s *IDPStore) AddServiceProvider(service *samlidp.Service) error {
-	if _, err := s.Services.Save(service, nil); err != nil {
+	var filter backends.Filter
+	srv := &samlidp.Service{}
+	_, err := s.Services.GetOne(backends.NewFilter().Match("name", service.Name), srv)
+	if err != nil {
+		if !backends.IsErrNotFound(err) {
+			return goa.ErrInternal(err)
+		}
+	} else {
+		// Service exists, make update
+		filter = backends.NewFilter().Match("name", service.Name)
+	}
+
+	if _, err := s.Services.Save(service, filter); err != nil {
 		return goa.ErrInternal(err)
 	}
 

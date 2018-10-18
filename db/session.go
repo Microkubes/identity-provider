@@ -37,7 +37,19 @@ func (s *IDPStore) GetSession(w http.ResponseWriter, r *http.Request, req *saml.
 
 // AddSession adds new session in DB
 func (s *IDPStore) AddSession(session *saml.Session) error {
-	if _, err := s.Sessions.Save(session, nil); err != nil {
+	var filter backends.Filter
+	samlSession := &saml.Session{}
+	_, err := s.Sessions.GetOne(backends.NewFilter().Match("id", session.ID), samlSession)
+	if err != nil {
+		if !backends.IsErrNotFound(err) {
+			return goa.ErrInternal(err)
+		}
+	} else {
+		// Session exists, make update
+		filter = backends.NewFilter().Match("id", session.ID)
+	}
+
+	if _, err := s.Sessions.Save(session, filter); err != nil {
 		return err
 	}
 
