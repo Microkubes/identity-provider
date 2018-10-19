@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/JormungandrK/backends"
 
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
@@ -14,28 +14,35 @@ import (
 // GetServiceProvider returns the Service Provider metadata for the service provider ID,
 // which is typically the service provider's metadata URL. If an appropriate service
 // provider cannot be found then the returned error must be os.ErrNotExist.
-func (m *MongoCollections) GetServiceProvider(r *http.Request, serviceProviderID string) (*saml.EntityDescriptor, error) {
+func (s *IDPStore) GetServiceProvider(r *http.Request, serviceProviderID string) (*saml.EntityDescriptor, error) {
 	service := &samlidp.Service{}
-	query := bson.M{"name": bson.M{"$eq": serviceProviderID}}
-	err := m.Services.Find(query).Limit(1).One(service)
+	_, err := s.Services.GetOne(backends.NewFilter().Match("name", serviceProviderID), service)
 	if err != nil {
-		if err.Error() == "not found" {
+		if backends.IsErrNotFound(err) {
 			return nil, os.ErrNotExist
-		} else {
-			return nil, goa.ErrInternal(err)
 		}
+
+		return nil, goa.ErrInternal(err)
 	}
 
-	return &service.Metadata, nil
+	return &service.Metadata, err
 }
 
-// AddServiceProvider register new service provider
-func (m *MongoCollections) AddServiceProvider(service *samlidp.Service) error {
-	_, err := m.Services.Upsert(
-		bson.M{"name": service.Name},
-		bson.M{"$set": service})
-
+// AddServiceProvider register new service provider, update if already exists.
+func (s *IDPStore) AddServiceProvider(service *samlidp.Service) error {
+	var filter backends.Filter
+	srv := &samlidp.Service{}
+	_, err := s.Services.GetOne(backends.NewFilter().Match("name", service.Name), srv)
 	if err != nil {
+		if !backends.IsErrNotFound(err) {
+			return goa.ErrInternal(err)
+		}
+	} else {
+		// Service exists, make update
+		filter = backends.NewFilter().Match("name", service.Name)
+	}
+
+	if _, err := s.Services.Save(service, filter); err != nil {
 		return goa.ErrInternal(err)
 	}
 
@@ -43,24 +50,30 @@ func (m *MongoCollections) AddServiceProvider(service *samlidp.Service) error {
 }
 
 // DeleteServiceProvider deletes the service by serviceID which is EntityID
-func (m *MongoCollections) DeleteServiceProvider(serviceID string) error {
-	selector := bson.M{"name": bson.M{"$eq": serviceID}}
-	err := m.Services.Remove(selector)
+func (s *IDPStore) DeleteServiceProvider(serviceID string) error {
+	err := s.Services.DeleteOne(backends.NewFilter().Match("name", serviceID))
 	if err != nil {
-		if err.Error() == "not found" {
+		if backends.IsErrNotFound(err) {
 			return goa.ErrNotFound("service not found")
-		} else {
-			return goa.ErrInternal(err)
 		}
+
+		return goa.ErrInternal(err)
 	}
 
 	return nil
 }
 
 // GetServiceProviders returns all SP
-func (m *MongoCollections) GetServiceProviders() (*[]samlidp.Service, error) {
+func (s *IDPStore) GetServiceProviders() (*[]samlidp.Service, error) {
 	var services []samlidp.Service
-	if err := m.Services.Find(nil).All(&services); err != nil {
+	var typeHint map[string]interface{}
+
+	items, err := s.Services.GetAll(nil, typeHint, "", "", 0, 0)
+	if err != nil {
+		return nil, goa.ErrInternal(err)
+	}
+
+	if err := backends.MapToInterface(items, &services); err != nil {
 		return nil, goa.ErrInternal(err)
 	}
 
