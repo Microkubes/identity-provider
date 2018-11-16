@@ -10,11 +10,11 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go install github.com/Microkubes/ident
 ### Main
 FROM alpine:3.7
 
+COPY --from=build /go/src/github.com/Microkubes/identity-provider/config.json /config.json
 COPY --from=build /go/bin/identity-provider /identity-provider
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
 
 COPY public /public
-COPY config.json /config.json
 
 EXPOSE 8080
 

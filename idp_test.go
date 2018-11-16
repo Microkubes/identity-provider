@@ -341,12 +341,12 @@ func TestServeLogin(t *testing.T) {
 	    }
 	  }`)
 
-	err := ioutil.WriteFile("config.json", config, 0644)
+	err := ioutil.WriteFile("config-test.json", config, 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	defer os.Remove("config.json")
+	defer os.Remove("config-test.json")
 
 	gock.New("http://127.0.0.1:8081").
 		Post("/users").
@@ -412,12 +412,12 @@ func TestServeLoginUser(t *testing.T) {
 		}
 	  }`)
 
-	err := ioutil.WriteFile("config.json", config, 0644)
+	err := ioutil.WriteFile("config-test.json", config, 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	defer os.Remove("config.json")
+	defer os.Remove("config-test.json")
 
 	gock.New("http://127.0.0.1:8081").
 		Post("/users").
