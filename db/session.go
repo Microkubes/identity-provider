@@ -3,7 +3,7 @@ package db
 import (
 	"net/http"
 
-	"github.com/JormungandrK/backends"
+	"github.com/Microkubes/backends"
 
 	"github.com/crewjam/saml"
 	"github.com/goadesign/goa"
