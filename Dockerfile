@@ -6,6 +6,7 @@ RUN apk --no-cache add git curl openssh
 RUN go get -u -v github.com/goadesign/goa/... && \
     go get -u -v github.com/afex/hystrix-go/hystrix && \
     go get -u -v github.com/zenazn/goji/web && \
+    go get -u -v github.com/Microkubes/backends/... && \
     go get -u -v github.com/Microkubes/microservice-security/... && \
     go get -u -v github.com/Microkubes/microservice-tools/...
 
