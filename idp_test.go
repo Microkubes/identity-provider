@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"gopkg.in/h2non/gock.v1"
+	gock "gopkg.in/h2non/gock.v1"
 
 	"github.com/Microkubes/identity-provider/app"
 	"github.com/Microkubes/identity-provider/app/test"
@@ -126,20 +126,8 @@ UzreO96WzlBBMtY=
 
 var rootURL, _ = url.Parse("http://localhost:8081")
 var rootURLInternalError, _ = url.Parse("http://internal-error")
-var idpMetadataURL, _ = url.Parse("https://www.testshib.org/metadata/testshib-providers.xml")
-var samlSP, _ = samlsp.New(samlsp.Options{
-	IDPMetadataURL: idpMetadataURL,
-	URL:            *rootURL,
-	Key:            key.(*rsa.PrivateKey),
-	Certificate:    cert,
-})
-
-var samlSPErrInternal, _ = samlsp.New(samlsp.Options{
-	IDPMetadataURL: idpMetadataURL,
-	URL:            *rootURLInternalError,
-	Key:            key.(*rsa.PrivateKey),
-	Certificate:    cert,
-})
+var idpMetadataURL, _ = url.Parse("http://example.com/providers.xml")
+var data, _ = ioutil.ReadFile("providers.xml")
 
 func createSAMLIdP() *samlidp.Server {
 	logr := logger.DefaultLogger
@@ -219,6 +207,18 @@ func TestGetMetadata(t *testing.T) {
 }
 
 func TestAddServiceProviderIdpCreated(t *testing.T) {
+	gock.New("http://example.com").
+		Get("providers.xml").
+		Reply(200).
+		BodyString(string(data))
+
+	var samlSP, _ = samlsp.New(samlsp.Options{
+		IDPMetadataURL: idpMetadataURL,
+		URL:            *rootURL,
+		Key:            key.(*rsa.PrivateKey),
+		Certificate:    cert,
+	})
+
 	payload, err := xml.MarshalIndent(samlSP.ServiceProvider.Metadata(), "", "  ")
 	if err != nil {
 		t.Fatal(err)
@@ -236,6 +236,18 @@ func TestAddServiceProviderIdpBadRequest(t *testing.T) {
 }
 
 func TestAddServiceProviderIdpInternalServerError(t *testing.T) {
+	gock.New("http://example.com").
+		Get("providers.xml").
+		Reply(200).
+		BodyString(string(data))
+
+	var samlSPErrInternal, _ = samlsp.New(samlsp.Options{
+		IDPMetadataURL: idpMetadataURL,
+		URL:            *rootURLInternalError,
+		Key:            key.(*rsa.PrivateKey),
+		Certificate:    cert,
+	})
+
 	payload, err := xml.MarshalIndent(samlSPErrInternal.ServiceProvider.Metadata(), "", "  ")
 	if err != nil {
 		t.Fatal(err)
