@@ -237,3 +237,7 @@ In order to use SAML IdP to login the user you need to set redirect-from-login p
 
 Then redirect user to the http://saml-ipd-url/saml/idp/login. After successfull log in, user will be redirected to the redirect-from-login url
 which is specified in the config.json file. Also, cookie called session will be set which is JWT token that contains user information like username, email, userID, roles.  
+
+## Contributing
+
+ For contributing to this repository or its documentation, see the [Contributing guidelines](CONTRIBUTING.md).
