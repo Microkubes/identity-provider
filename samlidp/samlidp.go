@@ -15,7 +15,7 @@ import (
 )
 
 // New returns a new saml idp Server
-func New(cert string, key string, cfg *config.Config) (*samlidp.Server, error) {
+func New(cfg *config.Config) (*samlidp.Server, error) {
 	logr := logger.DefaultLogger
 	flag.Parse()
 
@@ -24,7 +24,7 @@ func New(cert string, key string, cfg *config.Config) (*samlidp.Server, error) {
 		return nil, err
 	}
 
-	keyPair, err := tls.LoadX509KeyPair(cert, key)
+	keyPair, err := tls.LoadX509KeyPair(cfg.ServiceCert, cfg.ServiceKey)
 	if err != nil {
 		return nil, err
 	}
