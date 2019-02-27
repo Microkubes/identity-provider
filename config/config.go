@@ -27,9 +27,10 @@ type Config struct {
 	// SystemKey holds the path to the system key which is private RSA key
 	SystemKey string `json:"systemKey"`
 
-	// ServiceKey holds the path to the system key which is private RSA key
+	// ServiceKey holds the path to the service key
 	ServiceKey string `json:"serviceKey"`
-	// ServiceCert holds the path to the system key which is private RSA key
+
+	// ServiceCert holds the path to the service cert
 	ServiceCert string `json:"serviceCert"`
 
 	// Services is a map of <service-name>:<service base URL>. For example,
