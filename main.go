@@ -51,7 +51,7 @@ func main() {
 	}
 	defer cleanup()
 
-	idpServer, err := jormungandrSamlIdp.New("/run/secrets/service.cert", "/run/secrets/service.key", cfg)
+	idpServer, err := jormungandrSamlIdp.New(cfg)
 	if err != nil {
 		service.LogError("Creation of SAML IDP server failed", "err", err)
 		return

@@ -68,7 +68,9 @@ var confBytes = []byte(`{
 	},
 	"gatewayUrl": "http://kong:8000",
     "gatewayAdminUrl": "http://kong:8001",
-    "systemKey": "/run/secrets/system",
+	"systemKey": "/run/secrets/system",
+	"serviceKey": "tmp-key.key",
+	"serviceCert": "tmp-cert.cert",
  	"services": {
 		"microservice-user": "http://kong:8000/users"
 	},
@@ -105,7 +107,7 @@ func TestNew(t *testing.T) {
 	certFile.WriteString(certificate)
 	certFile.Sync()
 
-	_, err = New(keyFile.Name(), certFile.Name(), cfg)
+	_, err = New(cfg)
 	if err == nil {
 		t.Fatal("Nil error, expected: failed to find certificate PEM data in certificate input, but did find a private key; PEM inputs may have been switched")
 	}

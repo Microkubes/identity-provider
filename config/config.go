@@ -24,8 +24,14 @@ type Config struct {
 	// microservice with the API gateway.
 	GatewayAdminURL string `json:"gatewayAdminUrl"`
 
-	// SystemKey holds the path to the system key which is provate RSA key
+	// SystemKey holds the path to the system key which is private RSA key
 	SystemKey string `json:"systemKey"`
+
+	// ServiceKey holds the path to the service key
+	ServiceKey string `json:"serviceKey"`
+
+	// ServiceCert holds the path to the service cert
+	ServiceCert string `json:"serviceCert"`
 
 	// Services is a map of <service-name>:<service base URL>. For example,
 	// "user-microservice": "http://kong.gateway:8001/user"
