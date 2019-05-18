@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/goadesign/goa"
+	"github.com/keitaroinc/goa"
 )
 
 // PublicController implements the public resource.

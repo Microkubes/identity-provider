@@ -3,7 +3,7 @@ FROM golang:1.10-alpine3.7 as build
 
 RUN apk --no-cache add git curl openssh
 
-RUN go get -u -v github.com/goadesign/goa/... && \
+RUN go get -u -v github.com/keitaroinc/goa/... && \
     go get -u -v github.com/afex/hystrix-go/hystrix && \
     go get -u -v github.com/zenazn/goji/web && \
     go get -u -v github.com/Microkubes/backends/... && \

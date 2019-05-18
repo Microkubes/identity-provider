@@ -2,8 +2,8 @@ package design
 
 // Use . imports to enable the DSL
 import (
-	. "github.com/goadesign/goa/design"
-	. "github.com/goadesign/goa/design/apidsl"
+	. "github.com/keitaroinc/goa/design"
+	. "github.com/keitaroinc/goa/design/apidsl"
 )
 
 // Define default description and default global property values
