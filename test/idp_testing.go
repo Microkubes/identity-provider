@@ -12,8 +12,8 @@ import (
 	"net/url"
 
 	"github.com/Microkubes/identity-provider/app"
-	"github.com/goadesign/goa"
-	"github.com/goadesign/goa/goatest"
+	"github.com/keitaroinc/goa"
+	"github.com/keitaroinc/goa/goatest"
 )
 
 // AddServiceProviderIdpBadRequest runs the method AddServiceProvider of the given controller with the given parameters.

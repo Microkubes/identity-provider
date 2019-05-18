@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/Microkubes/identity-provider/client"
 	"github.com/Microkubes/identity-provider/tool/cli"
-	goaclient "github.com/goadesign/goa/client"
+	goaclient "github.com/keitaroinc/goa/client"
 	"github.com/spf13/cobra"
 	"net/http"
 	"os"

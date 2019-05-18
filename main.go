@@ -11,8 +11,8 @@ import (
 	"github.com/Microkubes/identity-provider/db"
 	jormungandrSamlIdp "github.com/Microkubes/identity-provider/samlidp"
 	"github.com/Microkubes/microservice-tools/gateway"
-	"github.com/goadesign/goa"
-	"github.com/goadesign/goa/middleware"
+	"github.com/keitaroinc/goa"
+	"github.com/keitaroinc/goa/middleware"
 )
 
 func main() {

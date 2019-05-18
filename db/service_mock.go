@@ -6,7 +6,7 @@ import (
 
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
-	"github.com/goadesign/goa"
+	"github.com/keitaroinc/goa"
 )
 
 type FakeDB struct {

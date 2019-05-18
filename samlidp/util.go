@@ -9,7 +9,7 @@ import (
 	"io"
 
 	"github.com/crewjam/saml"
-	"github.com/goadesign/goa"
+	"github.com/keitaroinc/goa"
 )
 
 // RandomBytes generates n random bytes

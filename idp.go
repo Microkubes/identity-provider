@@ -17,7 +17,7 @@ import (
 	"github.com/Microkubes/identity-provider/service"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlidp"
-	"github.com/goadesign/goa"
+	"github.com/keitaroinc/goa"
 )
 
 var sessionMaxAge = time.Hour * 24

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/crewjam/saml"
-	"github.com/goadesign/goa"
+	"github.com/keitaroinc/goa"
 )
 
 // GetSession return saml Session

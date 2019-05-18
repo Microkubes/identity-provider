@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/crewjam/saml"
-	"github.com/goadesign/goa"
+	"github.com/keitaroinc/goa"
 )
 
 // ValidateSamlRequest validates the  SAML requst. If it is not valid error is returned.

@@ -29,7 +29,7 @@ import (
 	"github.com/crewjam/saml/logger"
 	"github.com/crewjam/saml/samlidp"
 	"github.com/crewjam/saml/samlsp"
-	"github.com/goadesign/goa"
+	"github.com/keitaroinc/goa"
 )
 
 var confBytes = []byte(`{
