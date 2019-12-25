@@ -330,7 +330,7 @@ func TestServeSSO(t *testing.T) {
 
 	id := "K7nAHhSfcJzOfqkB6kSWiSJWCh6jroIX9FrxZt6inuU="
 	expire := time.Now().AddDate(0, 0, 1)
-	cookie := http.Cookie{"session", id, "/", "www.example.com", expire, expire.Format(time.UnixDate), 86400, true, true, "test=tcookie", []string{"test=tcookie"}}
+	cookie := http.Cookie{"session", id, "/", "www.example.com", expire, expire.Format(time.UnixDate), 86400, true, true, http.SameSiteDefaultMode, "test=tcookie", []string{"test=tcookie"}}
 	req.AddCookie(&cookie)
 
 	ctx := context.Background()
@@ -379,7 +379,7 @@ func TestServeLogin(t *testing.T) {
 
 	id := "K7nAHhSfcJzOfqkB6kSWiSJWCh6jroIX9FrxZt6inuU="
 	expire := time.Now().AddDate(0, 0, 1)
-	cookie := http.Cookie{"session", id, "/", "www.example.com", expire, expire.Format(time.UnixDate), 86400, true, true, "test=tcookie", []string{"test=tcookie"}}
+	cookie := http.Cookie{"session", id, "/", "www.example.com", expire, expire.Format(time.UnixDate), 86400, true, true, http.SameSiteDefaultMode, "test=tcookie", []string{"test=tcookie"}}
 	req.AddCookie(&cookie)
 
 	ctx := context.Background()

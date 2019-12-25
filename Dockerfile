@@ -1,21 +1,15 @@
 ### Multi-stage build
-FROM golang:1.10-alpine3.7 as build
+FROM golang:1.13.5-alpine3.10 as build
 
 RUN apk --no-cache add git curl openssh
 
-RUN go get -u -v github.com/keitaroinc/goa/... && \
-    go get -u -v github.com/afex/hystrix-go/hystrix && \
-    go get -u -v github.com/zenazn/goji/web && \
-    go get -u -v github.com/Microkubes/backends/... && \
-    go get -u -v github.com/Microkubes/microservice-security/... && \
-    go get -u -v github.com/Microkubes/microservice-tools/...
-
 COPY . /go/src/github.com/Microkubes/identity-provider
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go install github.com/Microkubes/identity-provider
+RUN cd /go/src/github.com/Microkubes/identity-provider && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go install
 
 ### Main
-FROM alpine:3.7
+FROM alpine:3.10
 
 COPY --from=build /go/src/github.com/Microkubes/identity-provider/config.json /config.json
 COPY --from=build /go/bin/identity-provider /identity-provider
