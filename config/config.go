@@ -17,13 +17,6 @@ type Config struct {
 	// Database holds the database configuration
 	Database *commonconf.DBConfig `json:"database"`
 
-	// GatewayURL is the URL of the gateway (proxy).
-	GatewayURL string `json:"gatewayUrl"`
-
-	// GatewayAdminURL is the administration URL of the API Gateway. Used for purposes of registration of a
-	// microservice with the API gateway.
-	GatewayAdminURL string `json:"gatewayAdminUrl"`
-
 	// SystemKey holds the path to the system key which is private RSA key
 	SystemKey string `json:"systemKey"`
 
@@ -40,6 +33,9 @@ type Config struct {
 	// Client is a map of <client-name>:<url>
 	// "redirect-from-login": "http://client-root-url"
 	Client map[string]string `json:"client"`
+
+	// BaseURL is a <service>:<port> http based URL
+	BaseURL string `json:"baseUrl"`
 }
 
 // LoadConfig loads a Config from a configuration JSON file.

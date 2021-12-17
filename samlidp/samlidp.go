@@ -19,7 +19,7 @@ func New(cfg *config.Config) (*samlidp.Server, error) {
 	logr := logger.DefaultLogger
 	flag.Parse()
 
-	baseURL, err := url.Parse(fmt.Sprintf("%s/saml/idp", cfg.GatewayURL))
+	baseURL, err := url.Parse(fmt.Sprintf("%s/saml/idp", cfg.BaseURL))
 	if err != nil {
 		return nil, err
 	}

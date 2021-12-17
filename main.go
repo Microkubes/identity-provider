@@ -3,14 +3,12 @@
 package main
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/Microkubes/identity-provider/app"
 	"github.com/Microkubes/identity-provider/config"
 	"github.com/Microkubes/identity-provider/db"
 	jormungandrSamlIdp "github.com/Microkubes/identity-provider/samlidp"
-	"github.com/Microkubes/microservice-tools/gateway"
 	"github.com/keitaroinc/goa"
 	"github.com/keitaroinc/goa/middleware"
 )
@@ -28,14 +26,6 @@ func main() {
 		service.LogError("config", "err", err)
 		return
 	}
-
-	registration := gateway.NewKongGateway(cfg.GatewayAdminURL, &http.Client{}, &cfg.Microservice)
-	err = registration.SelfRegister()
-	if err != nil {
-		panic(err)
-	}
-
-	defer registration.Unregister() // defer the unregister for after main exits
 
 	// Mount middleware
 	service.Use(middleware.RequestID())

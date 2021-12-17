@@ -79,7 +79,7 @@ func (c *IdpController) LoginUser(ctx *app.LoginUserIdpContext) error {
 		RelayState:  "relayState",
 	}
 
-	jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), "", loginFile)
+	jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.BaseURL), "", loginFile)
 
 	return nil
 }
@@ -98,13 +98,13 @@ func (c *IdpController) ServeLoginUser(ctx *app.ServeLoginUserIdpContext) error 
 
 	email, password, err := service.CheckUserCredentials(r, w, req)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), err.Error(), loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.BaseURL), err.Error(), loginFile)
 		return nil
 	}
 
 	user, err := service.FindUser(email, password, c.IDP, c.Config)
 	if err != nil {
-		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.GatewayURL), "Wrong email or password!", loginFile)
+		jormungandrSamlIdp.LoginForm(w, r, req, fmt.Sprintf("%s/saml/idp/login", c.Config.BaseURL), "Wrong email or password!", loginFile)
 		return nil
 	}
 

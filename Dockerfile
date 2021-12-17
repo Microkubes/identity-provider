@@ -19,7 +19,4 @@ COPY public /public
 
 EXPOSE 8080
 
-ENV API_GATEWAY_URL="http://localhost:8001"
-
 CMD ["/identity-provider"]
-
