@@ -103,7 +103,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp1 := new(AddServiceProviderIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/services"]`,
+		Use:   `idp ["/services"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -117,7 +117,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp2 := new(DeleteServiceProviderIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/services"]`,
+		Use:   `idp ["/services"]`,
 		Short: ``,
 		Long: `
 
@@ -138,7 +138,7 @@ Payload example:
 	}
 	tmp3 := new(DeleteSessionIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/sessions"]`,
+		Use:   `idp ["/sessions"]`,
 		Short: ``,
 		Long: `
 
@@ -159,7 +159,7 @@ Payload example:
 	}
 	tmp4 := new(GetGoogleMetadataIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/metadata/google"]`,
+		Use:   `idp ["/metadata/google"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp4.Run(c, args) },
 	}
@@ -173,7 +173,7 @@ Payload example:
 	}
 	tmp5 := new(GetMetadataIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/metadata"]`,
+		Use:   `idp ["/metadata"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp5.Run(c, args) },
 	}
@@ -187,7 +187,7 @@ Payload example:
 	}
 	tmp6 := new(GetServiceProvidersIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/services"]`,
+		Use:   `idp ["/services"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
 	}
@@ -201,7 +201,7 @@ Payload example:
 	}
 	tmp7 := new(GetSessionsIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/sessions"]`,
+		Use:   `idp ["/sessions"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp7.Run(c, args) },
 	}
@@ -215,7 +215,7 @@ Payload example:
 	}
 	tmp8 := new(LoginUserIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/login"]`,
+		Use:   `idp ["/login"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
 	}
@@ -229,7 +229,7 @@ Payload example:
 	}
 	tmp9 := new(ServeLoginIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/sso"]`,
+		Use:   `idp ["/sso"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp9.Run(c, args) },
 	}
@@ -243,7 +243,7 @@ Payload example:
 	}
 	tmp10 := new(ServeLoginUserIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/login"]`,
+		Use:   `idp ["/login"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp10.Run(c, args) },
 	}
@@ -257,7 +257,7 @@ Payload example:
 	}
 	tmp11 := new(ServeSSOIdpCommand)
 	sub = &cobra.Command{
-		Use:   `idp ["/saml/idp/sso"]`,
+		Use:   `idp ["/sso"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp11.Run(c, args) },
 	}
@@ -500,7 +500,7 @@ func (cmd *AddServiceProviderIdpCommand) Run(c *client.Client, args []string) er
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/services"
+		path = "/services"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -524,7 +524,7 @@ func (cmd *DeleteServiceProviderIdpCommand) Run(c *client.Client, args []string)
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/services"
+		path = "/services"
 	}
 	var payload client.DeleteSPPayload
 	if cmd.Payload != "" {
@@ -557,7 +557,7 @@ func (cmd *DeleteSessionIdpCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/sessions"
+		path = "/sessions"
 	}
 	var payload client.DeleteSessionPayload
 	if cmd.Payload != "" {
@@ -590,7 +590,7 @@ func (cmd *GetGoogleMetadataIdpCommand) Run(c *client.Client, args []string) err
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/metadata/google"
+		path = "/metadata/google"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -614,7 +614,7 @@ func (cmd *GetMetadataIdpCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/metadata"
+		path = "/metadata"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -638,7 +638,7 @@ func (cmd *GetServiceProvidersIdpCommand) Run(c *client.Client, args []string) e
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/services"
+		path = "/services"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -662,7 +662,7 @@ func (cmd *GetSessionsIdpCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/sessions"
+		path = "/sessions"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -686,7 +686,7 @@ func (cmd *LoginUserIdpCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/login"
+		path = "/login"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -710,7 +710,7 @@ func (cmd *ServeLoginIdpCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/sso"
+		path = "/sso"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -734,7 +734,7 @@ func (cmd *ServeLoginUserIdpCommand) Run(c *client.Client, args []string) error 
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/login"
+		path = "/login"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -758,7 +758,7 @@ func (cmd *ServeSSOIdpCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = "/saml/idp/sso"
+		path = "/sso"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)

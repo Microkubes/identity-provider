@@ -52,12 +52,12 @@ type IdpController interface {
 func MountIdpController(service *goa.Service, ctrl IdpController) {
 	initService(service)
 	var h goa.Handler
-	service.Mux.Handle("OPTIONS", "/saml/idp/services", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
-	service.Mux.Handle("OPTIONS", "/saml/idp/sessions", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
-	service.Mux.Handle("OPTIONS", "/saml/idp/metadata/google", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
-	service.Mux.Handle("OPTIONS", "/saml/idp/metadata", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
-	service.Mux.Handle("OPTIONS", "/saml/idp/login", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
-	service.Mux.Handle("OPTIONS", "/saml/idp/sso", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/services", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/sessions", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/metadata/google", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/metadata", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/login", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
+	service.Mux.Handle("OPTIONS", "/sso", ctrl.MuxHandler("preflight", handleIdpOrigin(cors.HandlePreflight()), nil))
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -72,8 +72,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.AddServiceProvider(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("POST", "/saml/idp/services", ctrl.MuxHandler("addServiceProvider", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "AddServiceProvider", "route", "POST /saml/idp/services")
+	service.Mux.Handle("POST", "/services", ctrl.MuxHandler("addServiceProvider", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "AddServiceProvider", "route", "POST /services")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -94,8 +94,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.DeleteServiceProvider(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("DELETE", "/saml/idp/services", ctrl.MuxHandler("deleteServiceProvider", h, unmarshalDeleteServiceProviderIdpPayload))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteServiceProvider", "route", "DELETE /saml/idp/services")
+	service.Mux.Handle("DELETE", "/services", ctrl.MuxHandler("deleteServiceProvider", h, unmarshalDeleteServiceProviderIdpPayload))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteServiceProvider", "route", "DELETE /services")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -116,8 +116,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.DeleteSession(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("DELETE", "/saml/idp/sessions", ctrl.MuxHandler("deleteSession", h, unmarshalDeleteSessionIdpPayload))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteSession", "route", "DELETE /saml/idp/sessions")
+	service.Mux.Handle("DELETE", "/sessions", ctrl.MuxHandler("deleteSession", h, unmarshalDeleteSessionIdpPayload))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "DeleteSession", "route", "DELETE /sessions")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -132,8 +132,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.GetGoogleMetadata(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("GET", "/saml/idp/metadata/google", ctrl.MuxHandler("getGoogleMetadata", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "GetGoogleMetadata", "route", "GET /saml/idp/metadata/google")
+	service.Mux.Handle("GET", "/metadata/google", ctrl.MuxHandler("getGoogleMetadata", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetGoogleMetadata", "route", "GET /metadata/google")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -148,8 +148,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.GetMetadata(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("GET", "/saml/idp/metadata", ctrl.MuxHandler("getMetadata", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "GetMetadata", "route", "GET /saml/idp/metadata")
+	service.Mux.Handle("GET", "/metadata", ctrl.MuxHandler("getMetadata", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetMetadata", "route", "GET /metadata")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -164,8 +164,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.GetServiceProviders(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("GET", "/saml/idp/services", ctrl.MuxHandler("getServiceProviders", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "GetServiceProviders", "route", "GET /saml/idp/services")
+	service.Mux.Handle("GET", "/services", ctrl.MuxHandler("getServiceProviders", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetServiceProviders", "route", "GET /services")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -180,8 +180,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.GetSessions(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("GET", "/saml/idp/sessions", ctrl.MuxHandler("getSessions", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "GetSessions", "route", "GET /saml/idp/sessions")
+	service.Mux.Handle("GET", "/sessions", ctrl.MuxHandler("getSessions", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "GetSessions", "route", "GET /sessions")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -196,8 +196,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.LoginUser(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("GET", "/saml/idp/login", ctrl.MuxHandler("loginUser", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "LoginUser", "route", "GET /saml/idp/login")
+	service.Mux.Handle("GET", "/login", ctrl.MuxHandler("loginUser", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "LoginUser", "route", "GET /login")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -212,8 +212,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.ServeLogin(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("POST", "/saml/idp/sso", ctrl.MuxHandler("serveLogin", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLogin", "route", "POST /saml/idp/sso")
+	service.Mux.Handle("POST", "/sso", ctrl.MuxHandler("serveLogin", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLogin", "route", "POST /sso")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -228,8 +228,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.ServeLoginUser(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("POST", "/saml/idp/login", ctrl.MuxHandler("serveLoginUser", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLoginUser", "route", "POST /saml/idp/login")
+	service.Mux.Handle("POST", "/login", ctrl.MuxHandler("serveLoginUser", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeLoginUser", "route", "POST /login")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -244,8 +244,8 @@ func MountIdpController(service *goa.Service, ctrl IdpController) {
 		return ctrl.ServeSSO(rctx)
 	}
 	h = handleIdpOrigin(h)
-	service.Mux.Handle("GET", "/saml/idp/sso", ctrl.MuxHandler("serveSSO", h, nil))
-	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeSSO", "route", "GET /saml/idp/sso")
+	service.Mux.Handle("GET", "/sso", ctrl.MuxHandler("serveSSO", h, nil))
+	service.LogInfo("mount", "ctrl", "Idp", "action", "ServeSSO", "route", "GET /sso")
 }
 
 // handleIdpOrigin applies the CORS response headers corresponding to the origin.

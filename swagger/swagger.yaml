@@ -37,7 +37,7 @@ definitions:
       detail: Value of ID must be an integer
       id: 3F1FKVRR
       meta:
-        timestamp: 1.458609066e+09
+        timestamp: 1458609066
       status: "400"
     properties:
       code:
@@ -58,7 +58,7 @@ definitions:
         description: a meta object containing non-standard meta-information about
           the error.
         example:
-          timestamp: 1.458609066e+09
+          timestamp: 1458609066
         type: object
       status:
         description: the HTTP status code applicable to this problem, expressed as
@@ -73,6 +73,51 @@ info:
   title: The saml identity provider microservice
   version: "1.0"
 paths:
+  /login:
+    get:
+      description: Login user
+      operationId: idp#loginUser
+      schemes:
+      - http
+      summary: loginUser idp
+      tags:
+      - idp
+    post:
+      description: Login user
+      operationId: idp#serveLoginUser
+      schemes:
+      - http
+      summary: serveLoginUser idp
+      tags:
+      - idp
+  /metadata:
+    get:
+      description: Get Jormungandr metadata
+      operationId: idp#getMetadata
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      summary: getMetadata idp
+      tags:
+      - idp
+  /metadata/google:
+    get:
+      description: Get Google's metadata
+      operationId: idp#getGoogleMetadata
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      summary: getGoogleMetadata idp
+      tags:
+      - idp
   /saml/css/{filepath}:
     get:
       operationId: public#/saml/css/*filepath
@@ -94,52 +139,28 @@ paths:
       schemes:
       - http
       summary: Download public/css
-  /saml/idp/login:
+  /saml/js/{filepath}:
     get:
-      description: Login user
-      operationId: idp#loginUser
-      schemes:
-      - http
-      summary: loginUser idp
-      tags:
-      - idp
-    post:
-      description: Login user
-      operationId: idp#serveLoginUser
-      schemes:
-      - http
-      summary: serveLoginUser idp
-      tags:
-      - idp
-  /saml/idp/metadata:
-    get:
-      description: Get Jormungandr metadata
-      operationId: idp#getMetadata
-      produces:
-      - text/plain
+      operationId: public#/saml/js/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
       responses:
         "200":
-          description: OK
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
       schemes:
       - http
-      summary: getMetadata idp
-      tags:
-      - idp
-  /saml/idp/metadata/google:
-    get:
-      description: Get Google's metadata
-      operationId: idp#getGoogleMetadata
-      produces:
-      - text/plain
-      responses:
-        "200":
-          description: OK
-      schemes:
-      - http
-      summary: getGoogleMetadata idp
-      tags:
-      - idp
-  /saml/idp/services:
+      summary: Download public/js
+  /services:
     delete:
       description: Delete a service provider
       operationId: idp#deleteServiceProvider
@@ -212,7 +233,7 @@ paths:
       summary: addServiceProvider idp
       tags:
       - idp
-  /saml/idp/sessions:
+  /sessions:
     delete:
       description: Delete a service provider
       operationId: idp#deleteSession
@@ -264,7 +285,7 @@ paths:
       summary: getSessions idp
       tags:
       - idp
-  /saml/idp/sso:
+  /sso:
     get:
       description: Serve Single Sign On
       operationId: idp#serveSSO
@@ -281,27 +302,6 @@ paths:
       summary: serveLogin idp
       tags:
       - idp
-  /saml/js/{filepath}:
-    get:
-      operationId: public#/saml/js/*filepath
-      parameters:
-      - description: Relative file path
-        in: path
-        name: filepath
-        required: true
-        type: string
-      responses:
-        "200":
-          description: File downloaded
-          schema:
-            type: file
-        "404":
-          description: File not found
-          schema:
-            $ref: '#/definitions/error'
-      schemes:
-      - http
-      summary: Download public/js
   /swagger-ui/{filepath}:
     get:
       operationId: swagger#/swagger-ui/*filepath
